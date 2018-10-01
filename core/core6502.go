@@ -1,41 +1,47 @@
 package core
 
 type Cpu struct {
-	a    uint8  //Accumulator
-	x, y uint8  //Index Registers
-	p    uint8  //Processor flags
-	s    uint8  //Stack pointer
+	a    byte   //Accumulator
+	x, y byte   //Index Registers
+	p    byte   //Processor flags
+	s    byte   //Stack pointer
 	pc   uint16 //Program counter
-	mem  []uint8
+	mem  []byte
 }
 
 //NewCPU instantiates a new instance of the Cpu
-func NewCPU(memory []uint8) *Cpu {
+func NewCPU(memory []byte) *Cpu {
 	var cpu = Cpu{}
 	cpu.mem = memory
 	return &cpu
 }
 
-func (cpu *Cpu) GetA() uint8 {
+func (cpu *Cpu) GetA() byte {
 	return cpu.a
 }
 
-func (cpu *Cpu) GetX() uint8 {
+func (cpu *Cpu) GetX() byte {
 	return cpu.x
 }
 
-func (cpu *Cpu) GetY() uint8 {
+func (cpu *Cpu) GetY() byte {
 	return cpu.y
 }
 
-func (cpu *Cpu) GetP() uint8 {
+func (cpu *Cpu) GetP() byte {
 	return cpu.p
 }
 
-func (cpu *Cpu) GetS() uint8 {
+func (cpu *Cpu) GetS() byte {
 	return cpu.s
 }
 
 func (cpu *Cpu) GetPC() uint16 {
 	return cpu.pc
+}
+
+func (cpu *Cpu) SetNZStatus(value byte) {
+	if value < 0 {
+		cpu.p |= 1 << 7
+	}
 }

@@ -10,7 +10,7 @@ func (cpu *Cpu) AND() {
 	case andImm:
 		print("AND Immediate")
 		v := cpu.mem[cpu.pc+1]
-		cpu.a = cpu.a + v
+		cpu.a = cpu.a & v
 	case andZp:
 		print("AND Zero Page")
 	case andZpX:
