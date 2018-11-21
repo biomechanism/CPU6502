@@ -1,6 +1,23 @@
 package core
 
 func (cpu *Cpu) ADC() {
+	opcode := cpu.mem[cpu.pc]
+	switch opcode {
+	case adcImm:
+		println("ADC Immediate")
+		v := cpu.mem[cpu.pc+1]
+		accBefore := cpu.a
+		cpu.a += v
+		cpu.setOverflowStatus(accBefore, v, cpu.a)
+		cpu.setNegativeStatus(cpu.a)
+	case adcZp:
+	case adcZpX:
+	case adcAbs:
+	case adcAbsX:
+	case adcAbsY:
+	case adcIndX:
+	case adcIndY:
+	}
 
 }
 

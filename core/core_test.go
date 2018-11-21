@@ -13,6 +13,40 @@ func TestLoad(t *testing.T) {
 
 }
 
+func TestADCImmediate(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 10
+	cpu.mem[0] = adcImm
+	cpu.mem[1] = 4
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 14 {
+		t.Errorf("Expexted %d, Actual %d\n", 14, cpu.a)
+	}
+
+}
+
+func TestADCImmediateOverflow(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 127
+	cpu.mem[0] = adcImm
+	cpu.mem[1] = 1
+
+	inst := cpu.Decode()
+	inst()
+
+	fmt.Printf("FLAGS: %d\n", cpu.p)
+
+	if !cpu.isOverflow() {
+		t.Errorf("Expexted %d, Actual %d\n", 64, cpu.p&(1<<6))
+	}
+
+}
+
 func TestANDImmediate(t *testing.T) {
 	cpu := newCpu()
 

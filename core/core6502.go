@@ -61,17 +61,17 @@ func (cpu *Cpu) setNegativeStatus(value byte) {
 	if int8(value) < 0 {
 		cpu.p |= 1 << 7
 	} else {
-		cpu.p &= ^byte(1 << 6)
+		cpu.p &= ^byte(1 << 7)
 	}
 }
 
 func (cpu *Cpu) setOverflowStatus(val1, val2, result uint8) {
-	v1 := int(val1)
-	v2 := int(val2)
-	r := int(result)
+	v1 := int8(val1)
+	v2 := int8(val2)
+	r := int8(result)
 
-	//fmt.Printf("(Unsigned) V1: %d, V2: %d, R: %d\n", val1, val2, result)
-	//fmt.Printf("(Signed) V1: %d, V2: %d, R: %d\n", v1, v2, r)
+	fmt.Printf("(Unsigned) V1: %d, V2: %d, R: %d\n", val1, val2, result)
+	fmt.Printf("(Signed) V1: %d, V2: %d, R: %d\n", v1, v2, r)
 
 	if v1 >= 0 && v2 >= 0 && r < 0 {
 		fmt.Println("1. Setting Overflow")
@@ -80,6 +80,7 @@ func (cpu *Cpu) setOverflowStatus(val1, val2, result uint8) {
 		fmt.Println("2. Setting Overflow")
 		//TODO: Check if r should be >0 or >= 0
 		cpu.p |= 1 << 6
+		fmt.Printf("SET PROCESSOR %d\n", cpu.p)
 	} else {
 		fmt.Println("Clearing Overflow")
 		cpu.p &= ^byte(1 << 6)
@@ -89,4 +90,8 @@ func (cpu *Cpu) setOverflowStatus(val1, val2, result uint8) {
 
 func (cpu *Cpu) clearOverflowStatus() {
 	cpu.p &= ^byte(1 << 6)
+}
+
+func (cpu *Cpu) isOverflow() bool {
+	return cpu.p&(1<<6) == 64
 }
