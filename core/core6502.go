@@ -41,7 +41,13 @@ func (cpu *Cpu) GetPC() uint16 {
 }
 
 func (cpu *Cpu) SetNZStatus(value byte) {
-	if value < 0 {
+	if int8(value) < 0 {
 		cpu.p |= 1 << 7
 	}
+}
+
+func (cpu *Cpu) Execute() {
+	//op := cpu.mem[cpu.pc]
+	//Call op function
+
 }

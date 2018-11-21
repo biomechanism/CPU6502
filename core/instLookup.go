@@ -142,7 +142,7 @@ var infoArray = [][3]int{
 	{fe74, 0, 0},
 	{adcZpX, 2, 4},
 	{rorZpX, 2, 6},
-	{fe77},
+	{fe77, 0, 0},
 
 	{sei, 1, 2},
 	{adcAbsY, 3, 4}, // +1 if page boundary is crossed
