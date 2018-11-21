@@ -11,9 +11,7 @@ func (cpu *Cpu) AND() {
 		print("AND Immediate\n")
 		v := cpu.mem[cpu.pc+1]
 		cpu.a = cpu.a & v
-		cpu.SetNZStatus(cpu.a)
 	case andZp:
-		//Zero Page, addressable $0000 - $00FF
 		print("AND Zero Page\n")
 		v := cpu.mem[cpu.pc+1]
 		cpu.a = cpu.a & cpu.mem[v]
@@ -73,4 +71,7 @@ func (cpu *Cpu) AND() {
 		v := cpu.mem[addr]
 		cpu.a &= v
 	}
+
+	cpu.setNegativeStatus(cpu.a)
+	cpu.clearOverflowStatus()
 }
