@@ -5,3 +5,11 @@ http://www.classic-games.com/commodore64/64doc.html
 
 http://www.6502.org/tutorials/vflag.html
 
+https://stackoverflow.com/questions/19301498/carry-flag-auxiliary-flag-and-overflow-flag-in-assembly
+
+http://graphics.stanford.edu/~seander/bithacks.html
+
+https://www.masswerk.at/6502/6502_instruction_set.html#AND
+
+
+

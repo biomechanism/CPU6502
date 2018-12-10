@@ -65,7 +65,7 @@ func (cpu *Cpu) setNegativeStatus(value byte) {
 	}
 }
 
-func (cpu *Cpu) setOverflowStatus(val1, val2, result uint8) {
+func (cpu *Cpu) setOverflowStatus(val1, val2, result byte) {
 	v1 := int8(val1)
 	v2 := int8(val2)
 	r := int8(result)
@@ -88,10 +88,34 @@ func (cpu *Cpu) setOverflowStatus(val1, val2, result uint8) {
 
 }
 
+func (cpu *Cpu) setCarryStatus(val1, val2, result byte) {
+
+	val3 := val1 + val2
+
+	if val3 < val1 || val3 < val2 {
+		fmt.Println("SETTING CARRY")
+		cpu.p |= 1
+	} else {
+		cpu.p &= ^byte(1)
+		fmt.Println("CLEARING CARRY")
+	}
+
+}
+
 func (cpu *Cpu) clearOverflowStatus() {
 	cpu.p &= ^byte(1 << 6)
 }
 
 func (cpu *Cpu) isOverflow() bool {
 	return cpu.p&(1<<6) == 64
+}
+
+func (cpu *Cpu) isCarry() bool {
+	return cpu.p&1 == 1
+}
+
+func (cpu *Cpu) getCarry() byte {
+	fmt.Printf("FLAGS: %d\n", cpu.p)
+	fmt.Printf("C FLAG: %d\n", cpu.p&1)
+	return cpu.p & 1
 }

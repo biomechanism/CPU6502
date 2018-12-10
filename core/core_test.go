@@ -14,6 +14,7 @@ func TestLoad(t *testing.T) {
 }
 
 func TestADCImmediate(t *testing.T) {
+
 	cpu := newCpu()
 
 	cpu.a = 10
@@ -45,6 +46,27 @@ func TestADCImmediateOverflow(t *testing.T) {
 		t.Errorf("Expexted %d, Actual %d\n", 64, cpu.p&(1<<6))
 	}
 
+}
+
+func TestADCImmediateCarry(t *testing.T) {
+	fmt.Println("ADC Immediate Carry")
+	cpu := newCpu()
+	cpu.a = 254
+	cpu.mem[0] = adcImm
+	cpu.mem[1] = 1
+	// cpu.mem[2] = adcImm
+	// cpu.mem[3] = 2
+
+	cpu.p |= 1
+
+	//cpu.setCarryStatus(254, 1, 0)
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.getCarry() != 1 {
+		t.Error("Expexted %d, Actual %d\n", 1, cpu.p&1)
+	}
 }
 
 func TestANDImmediate(t *testing.T) {

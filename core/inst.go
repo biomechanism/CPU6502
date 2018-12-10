@@ -6,9 +6,7 @@ func (cpu *Cpu) ADC() {
 	case adcImm:
 		println("ADC Immediate")
 		v := cpu.mem[cpu.pc+1]
-		accBefore := cpu.a
-		cpu.a += v
-		cpu.setOverflowStatus(accBefore, v, cpu.a)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
 		cpu.setNegativeStatus(cpu.a)
 	case adcZp:
 	case adcZpX:
@@ -19,6 +17,20 @@ func (cpu *Cpu) ADC() {
 	case adcIndY:
 	}
 
+}
+
+func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
+	val3 := val1 + val2
+
+	if val3 < val1 {
+		cpu.p |= 1
+	} else {
+		cpu.p &= ^byte(1)
+	}
+
+	cpu.setOverflowStatus(val1, val2, val3)
+
+	return val3
 }
 
 func (cpu *Cpu) AND() {
