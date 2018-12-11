@@ -65,6 +65,14 @@ func (cpu *Cpu) setNegativeStatus(value byte) {
 	}
 }
 
+func (cpu *Cpu) setZeroStatus(value byte) {
+	if value == 0 {
+		cpu.p |= 1 << 1
+	} else {
+		cpu.p &= ^byte(1 << 1)
+	}
+}
+
 func (cpu *Cpu) setOverflowStatus(val1, val2, result byte) {
 	v1 := int8(val1)
 	v2 := int8(val2)
