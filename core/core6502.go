@@ -119,3 +119,66 @@ func (cpu *Cpu) getCarry() byte {
 	fmt.Printf("C FLAG: %d\n", cpu.p&1)
 	return cpu.p & 1
 }
+
+func (cpu *Cpu) readImm(loc uint16) byte {
+	return cpu.mem[loc]
+}
+
+func (cpu *Cpu) readZp(loc uint16) byte {
+	return cpu.mem[cpu.mem[loc]]
+}
+
+func (cpu *Cpu) readZpX(loc uint16) byte {
+	v := cpu.addWithCarry(cpu.mem[loc], cpu.x)
+	return cpu.mem[v]
+}
+
+func (cpu *Cpu) readAbs(loc uint16) byte {
+	v1 := cpu.mem[loc]
+	v2 := cpu.mem[loc+1]
+	var addr uint16
+	addr = uint16(v2)
+	addr = addr << 8
+	addr = addr | uint16(v1)
+	return cpu.mem[addr]
+}
+
+func (cpu *Cpu) readAbsX(loc uint16) byte {
+	v1 := cpu.mem[loc]
+	v2 := cpu.mem[loc+1]
+	var addr uint16
+	addr = uint16(v2) << 8
+	addr |= uint16(v1)
+	addr += uint16(cpu.x)
+	return cpu.mem[addr]
+}
+
+func (cpu *Cpu) readAbsY(loc uint16) byte {
+	v1 := cpu.mem[loc]
+	v2 := cpu.mem[loc+1]
+	var addr uint16
+	addr = uint16(v2) << 8
+	addr |= uint16(v1)
+	addr += uint16(cpu.y)
+	return cpu.mem[addr]
+}
+
+func (cpu *Cpu) readIndX(loc uint16) byte {
+	zpIndex := cpu.mem[loc]
+	zpIndex += cpu.x
+	lowByte := cpu.mem[zpIndex]
+	hiByte := cpu.mem[zpIndex+1]
+	var addr = (uint16(hiByte) << 8) | uint16(lowByte)
+	return cpu.mem[addr]
+}
+
+func (cpu *Cpu) readIndY(loc uint16) byte {
+	var zpAddr uint16
+	v1 := cpu.mem[loc]
+	zpAddr = uint16(v1)
+	lowByte := cpu.mem[zpAddr]
+	hiByte := cpu.mem[zpAddr+1]
+	var addr = (uint16(hiByte) << 8) | uint16(lowByte)
+	addr += uint16(cpu.y)
+	return cpu.mem[addr]
+}

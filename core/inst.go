@@ -1,57 +1,5 @@
 package core
 
-func (cpu *Cpu) ADC() {
-	opcode := cpu.mem[cpu.pc]
-	switch opcode {
-	case adcImm:
-		println("ADC Immediate")
-		v := cpu.mem[cpu.pc+1]
-		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
-		cpu.setNegativeStatus(cpu.a)
-	case adcZp:
-		println("ADC Immediate Zero Page")
-		v := cpu.mem[cpu.pc+1]
-		v = cpu.mem[v]
-		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
-		cpu.setNegativeStatus(cpu.a)
-	case adcZpX:
-		println("ADC Immediate Zero Page X")
-		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
-		//to the base or not.
-		v := cpu.mem[cpu.pc+1]
-		v = cpu.addWithCarry(v, cpu.x)
-		v = cpu.mem[v]
-		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
-		cpu.setNegativeStatus(cpu.a)
-	case adcAbs:
-		println("ADC Absolute")
-		v1 := cpu.mem[cpu.pc+1]
-		v2 := cpu.mem[cpu.pc+2]
-		var addr uint16
-		addr = uint16(v2)
-		addr = addr << 8
-		addr = addr | uint16(v1)
-		v := cpu.mem[addr]
-		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
-	case adcAbsX:
-		//TODO: CHECK, should addredd calculations from and index have a carry
-		//check?
-		print("ADC Absolute X")
-		v1 := cpu.mem[cpu.pc+1]
-		v2 := cpu.mem[cpu.pc+2]
-		var addr uint16
-		addr = uint16(v2) << 8
-		addr |= uint16(v1)
-		addr += uint16(cpu.x)
-		v := cpu.mem[addr]
-		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
-	case adcAbsY:
-	case adcIndX:
-	case adcIndY:
-	}
-
-}
-
 func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
 	result := val1 + val2
 
@@ -66,71 +14,70 @@ func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
 	return result
 }
 
+func (cpu *Cpu) ADC() {
+	opcode := cpu.mem[cpu.pc]
+	switch opcode {
+	case adcImm:
+		v := cpu.readImm(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+		cpu.setNegativeStatus(cpu.a)
+	case adcZp:
+		v := cpu.readZp(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+		cpu.setNegativeStatus(cpu.a)
+	case adcZpX:
+		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
+		//to the base or not.
+		v := cpu.readZpX(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+		cpu.setNegativeStatus(cpu.a)
+	case adcAbs:
+		v := cpu.readAbs(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+	case adcAbsX:
+		//TODO: CHECK, should addredd calculations from and index have a carry
+		//check?
+		v := cpu.readAbsX(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+	case adcAbsY:
+		v := cpu.readAbsY(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+	case adcIndX:
+		v := cpu.readIndX(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+	case adcIndY:
+		v := cpu.readIndY(cpu.pc + 1)
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+	}
+
+}
+
 func (cpu *Cpu) AND() {
 	opcode := cpu.mem[cpu.pc]
 	switch opcode {
 	case andImm:
-		print("AND Immediate\n")
-		v := cpu.mem[cpu.pc+1]
+		v := cpu.readImm(cpu.pc + 1)
 		cpu.a = cpu.a & v
 	case andZp:
-		print("AND Zero Page\n")
-		v := cpu.mem[cpu.pc+1]
-		cpu.a = cpu.a & cpu.mem[v]
+		v := cpu.readZp(cpu.pc + 1)
+		cpu.a = cpu.a & v
 	case andZpX:
-		print("AND Zero Page X\n")
-		v := cpu.mem[cpu.pc+1]
-		base := v + cpu.x
-		cpu.a = cpu.a & cpu.mem[base]
+		v := cpu.readZpX(cpu.pc + 1)
+		cpu.a = cpu.a & v
 	case andAbs:
-		print("AND Absolute\n")
-		v1 := cpu.mem[cpu.pc+1]
-		v2 := cpu.mem[cpu.pc+2]
-		var addr uint16
-		addr = uint16(v2)
-		addr = addr << 8
-		addr = addr | uint16(v1)
-		v := cpu.mem[addr]
+		v := cpu.readAbs(cpu.pc + 1)
 		cpu.a = cpu.a & v
 	case andAbsX:
-		print("AND Absolute X\n")
-		v1 := cpu.mem[cpu.pc+1]
-		v2 := cpu.mem[cpu.pc+2]
-		var addr uint16
-		addr = uint16(v2) << 8
-		addr |= uint16(v1)
-		addr += uint16(cpu.x)
-		v := cpu.mem[addr]
+		v := cpu.readAbsX(cpu.pc + 1)
 		cpu.a &= v
 	case andAbsY:
-		print("AND Absolute Y\n")
-		v1 := cpu.mem[cpu.pc+1]
-		v2 := cpu.mem[cpu.pc+2]
-		var addr uint16
-		addr = uint16(v2) << 8
-		addr |= uint16(v1)
-		addr += uint16(cpu.y)
-		v := cpu.mem[addr]
+		v := cpu.readAbsY(cpu.pc + 1)
 		cpu.a &= v
 	case andIndX:
-		print("AND Indirect X\n")
-		zpIndex := cpu.mem[cpu.pc+1]
-		zpIndex += cpu.x
-		lowByte := cpu.mem[zpIndex]
-		hiByte := cpu.mem[zpIndex+1]
-		var addr = (uint16(hiByte) << 8) | uint16(lowByte)
-		v := cpu.mem[addr]
+		v := cpu.readIndX(cpu.pc + 1)
 		cpu.a &= v
 	case andIndY:
-		print("AND Indirect Y\n")
-		var zpAddr uint16
-		v1 := cpu.mem[cpu.pc+1]
-		zpAddr = uint16(v1)
-		lowByte := cpu.mem[zpAddr]
-		hiByte := cpu.mem[zpAddr+1]
-		var addr = (uint16(hiByte) << 8) | uint16(lowByte)
-		addr += uint16(cpu.y)
-		v := cpu.mem[addr]
+		v := cpu.readIndY(cpu.pc + 1)
 		cpu.a &= v
 	}
 

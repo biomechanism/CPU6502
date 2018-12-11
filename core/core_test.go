@@ -125,6 +125,98 @@ func TestADCAbsolute(t *testing.T) {
 
 }
 
+func TestADCAbsoluteX(t *testing.T) {
+	fmt.Println("ADC Absolute X")
+	cpu := newCpu()
+
+	cpu.a = 10
+
+	cpu.mem[0] = adcAbsX
+	//Value 1000 Dec
+	cpu.mem[1] = 0xe8
+	cpu.mem[2] = 0x03
+	cpu.x = 2
+
+	cpu.mem[1002] = 5
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 15 {
+		t.Errorf("Expexted %d, Actual %d\n", 15, cpu.a)
+	}
+
+}
+
+func TestADCAbsoluteY(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 10
+
+	cpu.mem[0] = adcAbsY
+	//Value 1000 Dec
+	cpu.mem[1] = 0xe8
+	cpu.mem[2] = 0x03
+	cpu.y = 2
+
+	cpu.mem[1002] = 3
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 13 {
+		t.Errorf("Expected %d, Actual %d\n", 13, cpu.a)
+	}
+}
+
+func TestADCIndX(t *testing.T) {
+
+	cpu := newCpu()
+
+	cpu.a = 10
+
+	cpu.mem[0] = adcIndX
+	cpu.mem[1] = 4 //Zero Page Index
+
+	cpu.mem[4] = 0xe8
+	cpu.mem[5] = 0x03
+
+	cpu.mem[1000] = 3
+
+	cpu.x = 0
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 13 {
+		t.Errorf("Expected %d, Actual %d\n", 13, cpu.a)
+	}
+
+}
+
+func TestADCIndY(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 10
+	cpu.y = 1
+
+	cpu.mem[0] = adcIndY
+	cpu.mem[1] = 4 //Zero Page Index
+
+	cpu.mem[4] = 0xe8
+	cpu.mem[5] = 0x03
+
+	cpu.mem[1001] = 9
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 19 {
+		t.Errorf("Expected %d, Actual %d\n", 19, cpu.a)
+	}
+
+}
+
 func TestANDImmediate(t *testing.T) {
 	cpu := newCpu()
 
@@ -205,28 +297,6 @@ func TestANDZeroPageX(t *testing.T) {
 
 	if cpu.a != 3 {
 		t.Errorf("Expected %d, Actual %d\n", 3, cpu.a)
-	}
-
-}
-
-func TestADCAbsX(t *testing.T) {
-	cpu := newCpu()
-
-	cpu.a = 10
-
-	cpu.mem[0] = adcAbsX
-	//Value 1000 Dec
-	cpu.mem[1] = 0xe8
-	cpu.mem[2] = 0x03
-	cpu.x = 2
-
-	cpu.mem[1002] = 5
-
-	inst := cpu.Decode()
-	inst()
-
-	if cpu.a != 15 {
-		t.Errorf("Expected %d, Actual %d\n", 15, cpu.a)
 	}
 
 }
