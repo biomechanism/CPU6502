@@ -65,8 +65,64 @@ func TestADCImmediateCarry(t *testing.T) {
 	inst()
 
 	if cpu.getCarry() != 1 {
-		t.Error("Expexted %d, Actual %d\n", 1, cpu.p&1)
+		t.Errorf("Expexted %d, Actual %d\n", 1, cpu.p&1)
 	}
+}
+
+func TestADCImmediateZeroPage(t *testing.T) {
+	fmt.Println("ADC Immediate Zero Page")
+
+	cpu := newCpu()
+	cpu.a = 100
+	cpu.mem[0] = adcZp
+	cpu.mem[1] = 4
+	cpu.mem[4] = 8
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 108 {
+		t.Errorf("Expexted %d, Actual %d\n", 108, cpu.a)
+	}
+}
+
+func TestADCImmediateZeroPageX(t *testing.T) {
+	fmt.Println("ADC Immediate Zero Page X")
+
+	cpu := newCpu()
+	cpu.a = 11
+	cpu.x = 3
+	cpu.mem[0] = adcZpX
+	cpu.mem[1] = 4
+	cpu.mem[7] = 6
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 17 {
+		t.Errorf("Expexted %d, Actual %d\n", 17, cpu.a)
+	}
+}
+
+func TestADCAbsolute(t *testing.T) {
+	fmt.Println("ADC Absolute")
+	cpu := newCpu()
+
+	cpu.a = 10
+	cpu.mem[0] = adcAbs
+	//Value 1000 Dec
+	cpu.mem[1] = 0xe8
+	cpu.mem[2] = 0x03
+
+	cpu.mem[1000] = 3
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 13 {
+		t.Errorf("Expexted %d, Actual %d\n", 13, cpu.a)
+	}
+
 }
 
 func TestANDImmediate(t *testing.T) {
@@ -137,17 +193,40 @@ func TestANDZeroPage(t *testing.T) {
 
 func TestANDZeroPageX(t *testing.T) {
 	cpu := newCpu()
-	cpu.a = 9
+	cpu.a = 7
 	cpu.x = 2
 
 	cpu.mem[0] = andZpX
 	cpu.mem[1] = 8
+	cpu.mem[10] = 11
 
 	inst := cpu.Decode()
 	inst()
 
-	if cpu.a != 8 {
-		t.Errorf("Expected %d, Actual %d\n", 8, cpu.a)
+	if cpu.a != 3 {
+		t.Errorf("Expected %d, Actual %d\n", 3, cpu.a)
+	}
+
+}
+
+func TestADCAbsX(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 10
+
+	cpu.mem[0] = adcAbsX
+	//Value 1000 Dec
+	cpu.mem[1] = 0xe8
+	cpu.mem[2] = 0x03
+	cpu.x = 2
+
+	cpu.mem[1002] = 5
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 15 {
+		t.Errorf("Expected %d, Actual %d\n", 15, cpu.a)
 	}
 
 }

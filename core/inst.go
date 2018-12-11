@@ -9,9 +9,42 @@ func (cpu *Cpu) ADC() {
 		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
 		cpu.setNegativeStatus(cpu.a)
 	case adcZp:
+		println("ADC Immediate Zero Page")
+		v := cpu.mem[cpu.pc+1]
+		v = cpu.mem[v]
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+		cpu.setNegativeStatus(cpu.a)
 	case adcZpX:
+		println("ADC Immediate Zero Page X")
+		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
+		//to the base or not.
+		v := cpu.mem[cpu.pc+1]
+		v = cpu.addWithCarry(v, cpu.x)
+		v = cpu.mem[v]
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+		cpu.setNegativeStatus(cpu.a)
 	case adcAbs:
+		println("ADC Absolute")
+		v1 := cpu.mem[cpu.pc+1]
+		v2 := cpu.mem[cpu.pc+2]
+		var addr uint16
+		addr = uint16(v2)
+		addr = addr << 8
+		addr = addr | uint16(v1)
+		v := cpu.mem[addr]
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
 	case adcAbsX:
+		//TODO: CHECK, should addredd calculations from and index have a carry
+		//check?
+		print("ADC Absolute X")
+		v1 := cpu.mem[cpu.pc+1]
+		v2 := cpu.mem[cpu.pc+2]
+		var addr uint16
+		addr = uint16(v2) << 8
+		addr |= uint16(v1)
+		addr += uint16(cpu.x)
+		v := cpu.mem[addr]
+		cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
 	case adcAbsY:
 	case adcIndX:
 	case adcIndY:
@@ -20,17 +53,17 @@ func (cpu *Cpu) ADC() {
 }
 
 func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
-	val3 := val1 + val2
+	result := val1 + val2
 
-	if val3 < val1 {
+	if result < val1 {
 		cpu.p |= 1
 	} else {
 		cpu.p &= ^byte(1)
 	}
 
-	cpu.setOverflowStatus(val1, val2, val3)
+	cpu.setOverflowStatus(val1, val2, result)
 
-	return val3
+	return result
 }
 
 func (cpu *Cpu) AND() {
@@ -48,7 +81,7 @@ func (cpu *Cpu) AND() {
 		print("AND Zero Page X\n")
 		v := cpu.mem[cpu.pc+1]
 		base := v + cpu.x
-		cpu.a = cpu.a & base
+		cpu.a = cpu.a & cpu.mem[base]
 	case andAbs:
 		print("AND Absolute\n")
 		v1 := cpu.mem[cpu.pc+1]
