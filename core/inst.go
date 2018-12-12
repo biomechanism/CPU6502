@@ -72,3 +72,215 @@ func (cpu *Cpu) AND() {
 func (cpu *Cpu) ASL() {
 
 }
+
+func (cpu *Cpu) BCC() {
+
+}
+
+func (cpu *Cpu) BCS() {
+
+}
+
+func (cpu *Cpu) BEQ() {
+
+}
+
+func (cpu *Cpu) BIT() {
+
+}
+
+func (cpu *Cpu) BMI() {
+
+}
+
+func (cpu *Cpu) BNE() {
+
+}
+
+func (cpu *Cpu) BPL() {
+
+}
+
+func (cpu *Cpu) BRK() {
+
+}
+
+func (cpu *Cpu) BVC() {
+
+}
+
+func (cpu *Cpu) BVS() {
+
+}
+
+func (cpu *Cpu) CLC() {
+
+}
+
+func (cpu *Cpu) CLD() {
+
+}
+
+func (cpu *Cpu) CLI() {
+
+}
+
+func (cpu *Cpu) CLV() {
+
+}
+
+func (cpu *Cpu) CMP() {
+
+}
+
+func (cpu *Cpu) CPX() {
+
+}
+
+func (cpu *Cpu) CPY() {
+
+}
+
+func (cpu *Cpu) DEC() {
+
+}
+
+func (cpu *Cpu) DEX() {
+
+}
+
+func (cpu *Cpu) DEY() {
+
+}
+
+func (cpu *Cpu) EOR() {
+
+}
+
+func (cpu *Cpu) INC() {
+
+}
+
+func (cpu *Cpu) INX() {
+
+}
+
+func (cpu *Cpu) INY() {
+
+}
+
+func (cpu *Cpu) JMP() {
+
+}
+
+func (cpu *Cpu) JSR() {
+
+}
+
+func (cpu *Cpu) LDA() {
+
+}
+
+func (cpu *Cpu) LDX() {
+
+}
+
+func (cpu *Cpu) LDY() {
+
+}
+
+func (cpu *Cpu) LSR() {
+
+}
+
+func (cpu *Cpu) NOP() {
+
+}
+
+func (cpu *Cpu) ORA() {
+
+}
+
+func (cpu *Cpu) PHA() {
+
+}
+
+func (cpu *Cpu) PHP() {
+
+}
+
+func (cpu *Cpu) PLA() {
+
+}
+
+func (cpu *Cpu) PLP() {
+
+}
+
+func (cpu *Cpu) ROL() {
+
+}
+
+func (cpu *Cpu) ROR() {
+
+}
+
+func (cpu *Cpu) RTI() {
+
+}
+
+func (cpu *Cpu) RTS() {
+
+}
+
+func (cpu *Cpu) SBC() {
+
+}
+
+func (cpu *Cpu) SEC() {
+
+}
+
+func (cpu *Cpu) SED() {
+
+}
+
+func (cpu *Cpu) SEI() {
+
+}
+
+func (cpu *Cpu) STA() {
+
+}
+
+func (cpu *Cpu) STX() {
+
+}
+
+func (cpu *Cpu) STY() {
+
+}
+
+func (cpu *Cpu) TAX() {
+
+}
+
+func (cpu *Cpu) TAY() {
+
+}
+
+func (cpu *Cpu) TSX() {
+
+}
+
+func (cpu *Cpu) TXA() {
+
+}
+
+func (cpu *Cpu) TXS() {
+
+}
+
+func (cpu *Cpu) TYA() {
+
+}
