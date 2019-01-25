@@ -12,6 +12,7 @@ const (
 
 const (
 	None = iota
+	Acc
 	Imm
 	Zp
 	ZpX
@@ -38,7 +39,7 @@ var infoArray = [][5]int{
 
 	{php, 1, 3, 0, Imp},
 	{oraImm, 2, 2, 1, Imm}, //One Extra cycle to be added if accessing across page boundary
-	{aslAcc, 1, 2, 0, Imp},
+	{aslAcc, 1, 2, 0, Acc}, //NOTE: Changed from Implied to Acc addressing mode, not sure if doc was worng or I made a mistake.
 	{fe0b, 0, 0, 0, 0},
 	{fe0c, 0, 0, 0, 0},
 	{oraAbs, 3, 4, 0, Abs},

@@ -190,3 +190,17 @@ func (cpu *Cpu) readIndY(loc uint16) byte {
 	addr += uint16(cpu.y)
 	return cpu.mem[addr]
 }
+
+func (cpu *Cpu) writeImm(loc uint16, value byte) {
+	cpu.mem[loc] = value
+}
+
+func (cpu *Cpu) writeZp(loc uint16, value byte) {
+	cpu.mem[cpu.mem[loc]] = value
+}
+
+//Possibly don't need Carry?
+func (cpu *Cpu) writeZpX(loc uint16, value byte) {
+	v := cpu.addWithCarry(cpu.mem[loc], cpu.x)
+	cpu.mem[v] = value
+}

@@ -238,27 +238,28 @@ func TestANDImmediate(t *testing.T) {
 	}
 }
 
-func TestANDOverflowCleared(t *testing.T) {
-	cpu := newCpu()
+// AND does not affect overflow
+// func TestANDOverflowCleared(t *testing.T) {
+// 	cpu := newCpu()
 
-	cpu.a = 10
-	cpu.mem[0] = andImm
-	cpu.mem[1] = 6
+// 	cpu.a = 10
+// 	cpu.mem[0] = andImm
+// 	cpu.mem[1] = 6
 
-	cpu.p |= (1 << 6)
+// 	cpu.p |= (1 << 6)
 
-	inst := cpu.Decode()
-	inst()
+// 	inst := cpu.Decode()
+// 	inst()
 
-	overflow := cpu.p & (1 << 6)
+// 	overflow := cpu.p & (1 << 6)
 
-	fmt.Printf("OVERFLOW: %d\n", overflow)
+// 	fmt.Printf("OVERFLOW: %d\n", overflow)
 
-	if overflow != 0 {
-		t.Errorf("Expexted %d, Actual %d\n", 0, overflow)
-	}
+// 	if overflow != 0 {
+// 		t.Errorf("Expexted %d, Actual %d\n", 0, overflow)
+// 	}
 
-}
+// }
 
 func TestANDZeroPage(t *testing.T) {
 	cpu := newCpu()
@@ -410,6 +411,31 @@ func TestANDIndY(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 8, cpu.a)
 	}
 
+}
+
+func TestASLAcc(t *testing.T) {
+	cpu := newCpu()
+	cpu.mem[0] = aslAcc
+
+	cpu.a = 0xC0
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 0x80 {
+		t.Errorf("Expected %d, Actual %d\n", 0x80, cpu.a)
+	}
+
+	if cpu.p&1 == 0 {
+		t.Errorf("Expected Flag (Carry) C == 1, Actual C == %d\n", cpu.p&1)
+	}
+
+	if cpu.p&0x80 == 0 {
+		t.Errorf("Expected Flag (Negative) N == 1, Actual N == %d\n", (cpu.p&0x80)>>7)
+	}
+
+	if cpu.p&2 != 0 {
+		t.Errorf("Expected Flag (Zero) Z == 0, Actual Z == %d\n", cpu.p&2)
+	}
 }
 
 func newCpu() *Cpu {

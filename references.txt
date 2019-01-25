@@ -15,6 +15,10 @@ http://www.emulator101.com/6502-addressing-modes.html
 
 http://www.oxyron.de/html/opcodes02.html
 
+https://retrocomputing.stackexchange.com/questions/145/why-does-6502-indexed-lda-take-an-extra-cycle-at-page-boundaries
+
+
+
 
 
 

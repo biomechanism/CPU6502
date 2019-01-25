@@ -22,6 +22,8 @@ func (cpu *Cpu) readOpValue(loc uint16) byte {
 	fmt.Printf("OP: %x, AM: %d\n", opcode, mode)
 	var v byte
 	switch mode {
+	case Acc:
+		v = cpu.a
 	case Imm:
 		fmt.Println("MODE: IMM")
 		v = cpu.readImm(cpu.pc + 1)
@@ -56,6 +58,10 @@ func (cpu *Cpu) readOpValue(loc uint16) byte {
 	return v
 }
 
+func (cpu *Cpu) writeToMem(value byte) {
+
+}
+
 func (cpu *Cpu) ADC() {
 	v := cpu.readOpValue(cpu.pc)
 	cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
@@ -70,7 +76,15 @@ func (cpu *Cpu) AND() {
 }
 
 func (cpu *Cpu) ASL() {
-
+	v := cpu.readOpValue(cpu.pc)
+	if (0x80 & v) > 0 {
+		cpu.p |= 1
+	} else {
+		cpu.p &= ^byte(1)
+	}
+	cpu.a <<= 1
+	cpu.setNegativeStatus(cpu.a)
+	cpu.setZeroStatus(cpu.a)
 }
 
 func (cpu *Cpu) BCC() {
