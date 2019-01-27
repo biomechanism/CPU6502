@@ -3,12 +3,13 @@ package core
 import "fmt"
 
 type Cpu struct {
-	a    byte   //Accumulator
-	x, y byte   //Index Registers
-	p    byte   //Processor flags
-	s    byte   //Stack pointer
-	pc   uint16 //Program counter
-	mem  []byte
+	a                   byte   //Accumulator
+	x, y                byte   //Index Registers
+	p                   byte   //Processor flags
+	n, v, b, d, i, z, c bool   //Status flags
+	s                   byte   //Stack pointer
+	pc                  uint16 //Program counter
+	mem                 []byte
 }
 
 //NewCPU instantiates a new instance of the Cpu
@@ -30,9 +31,9 @@ func (cpu *Cpu) GetY() byte {
 	return cpu.y
 }
 
-func (cpu *Cpu) GetP() byte {
-	return cpu.p
-}
+// func (cpu *Cpu) GetP() byte {
+// 	return cpu.p
+// }
 
 func (cpu *Cpu) GetS() byte {
 	return cpu.s
@@ -40,6 +41,14 @@ func (cpu *Cpu) GetS() byte {
 
 func (cpu *Cpu) GetPC() uint16 {
 	return cpu.pc
+}
+
+func (cpu *Cpu) SetCarry() {
+	cpu.c = true
+}
+
+func (cpu *Cpu) ClearCarry() {
+	cpu.c = false
 }
 
 func (cpu *Cpu) SetNZStatus(value byte) {
@@ -59,17 +68,17 @@ func (cpu *Cpu) Execute() {
 
 func (cpu *Cpu) setNegativeStatus(value byte) {
 	if int8(value) < 0 {
-		cpu.p |= 1 << 7
+		cpu.n = true
 	} else {
-		cpu.p &= ^byte(1 << 7)
+		cpu.n = false
 	}
 }
 
 func (cpu *Cpu) setZeroStatus(value byte) {
 	if value == 0 {
-		cpu.p |= 1 << 1
+		cpu.z = true
 	} else {
-		cpu.p &= ^byte(1 << 1)
+		cpu.z = false
 	}
 }
 
@@ -83,15 +92,14 @@ func (cpu *Cpu) setOverflowStatus(val1, val2, result byte) {
 
 	if v1 >= 0 && v2 >= 0 && r < 0 {
 		fmt.Println("1. Setting Overflow")
-		cpu.p |= 1 << 6
+		cpu.v = true
 	} else if v1 < 0 && v2 < 0 && r > 0 {
 		fmt.Println("2. Setting Overflow")
 		//TODO: Check if r should be >0 or >= 0
-		cpu.p |= 1 << 6
-		fmt.Printf("SET PROCESSOR %d\n", cpu.p)
+		cpu.v = true
 	} else {
 		fmt.Println("Clearing Overflow")
-		cpu.p &= ^byte(1 << 6)
+		cpu.v = false
 	}
 
 }
@@ -102,30 +110,41 @@ func (cpu *Cpu) setCarryStatus(val1, val2, result byte) {
 
 	if val3 < val1 || val3 < val2 {
 		fmt.Println("SETTING CARRY")
-		cpu.p |= 1
+		cpu.c = true
 	} else {
-		cpu.p &= ^byte(1)
-		fmt.Println("CLEARING CARRY")
+		cpu.c = false
 	}
 
 }
 
 func (cpu *Cpu) clearOverflowStatus() {
-	cpu.p &= ^byte(1 << 6)
+	cpu.v = false
 }
 
 func (cpu *Cpu) isOverflow() bool {
-	return cpu.p&(1<<6) == 64
+	return cpu.v
 }
 
 func (cpu *Cpu) isCarry() bool {
-	return cpu.p&1 == 1
+	return cpu.c
 }
 
 func (cpu *Cpu) getCarry() byte {
-	fmt.Printf("FLAGS: %d\n", cpu.p)
-	fmt.Printf("C FLAG: %d\n", cpu.p&1)
-	return cpu.p & 1
+
+	if cpu.isCarry() {
+		return 1
+	}
+
+	return 0
+
+}
+
+func (cpu *Cpu) isNegative() bool {
+	return cpu.n
+}
+
+func (cpu *Cpu) isZero() bool {
+	return cpu.z
 }
 
 func (cpu *Cpu) readImm(loc uint16) byte {
@@ -149,12 +168,15 @@ func (cpu *Cpu) readZpX(loc uint16) byte {
 }
 
 func (cpu *Cpu) readAbs(loc uint16) byte {
+	fmt.Printf("[Absolute] LOC: %d\n", loc)
+	fmt.Printf("[Absolute] LOC Val: %d\n", cpu.mem[loc])
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16
 	addr = uint16(v2)
 	addr = addr << 8
 	addr = addr | uint16(v1)
+	fmt.Printf("[ZeroPageX] Final Val: %d\n", cpu.mem[addr])
 	return cpu.mem[addr]
 }
 
@@ -210,4 +232,14 @@ func (cpu *Cpu) writeZp(loc uint16, value byte) {
 func (cpu *Cpu) writeZpX(loc uint16, value byte) {
 	v := cpu.addWithCarry(cpu.mem[loc], cpu.x)
 	cpu.mem[v] = value
+}
+
+func (cpu *Cpu) writeAbs(loc uint16, value byte) {
+	v1 := cpu.mem[loc]
+	v2 := cpu.mem[loc+1]
+	var addr uint16
+	addr = uint16(v2)
+	addr = addr << 8
+	addr = addr | uint16(v1)
+	cpu.mem[addr] = value
 }

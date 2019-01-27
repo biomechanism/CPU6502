@@ -54,18 +54,13 @@ func TestADCImmediateCarry(t *testing.T) {
 	cpu.a = 254
 	cpu.mem[0] = adcImm
 	cpu.mem[1] = 1
-	// cpu.mem[2] = adcImm
-	// cpu.mem[3] = 2
-
-	cpu.p |= 1
-
-	//cpu.setCarryStatus(254, 1, 0)
+	cpu.SetCarry()
 
 	inst := cpu.Decode()
 	inst()
 
-	if cpu.getCarry() != 1 {
-		t.Errorf("Expexted %d, Actual %d\n", 1, cpu.p&1)
+	if !cpu.isCarry() {
+		t.Errorf("Expexted %v, Actual %v\n", true, cpu.c)
 	}
 }
 
@@ -425,16 +420,16 @@ func TestASLAcc(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 0x80, cpu.a)
 	}
 
-	if cpu.p&1 == 0 {
-		t.Errorf("Expected Flag (Carry) C == 1, Actual C == %d\n", cpu.p&1)
+	if !cpu.isCarry() {
+		t.Errorf("Expected Flag (Carry) C == true, Actual C == %v\n", cpu.c)
 	}
 
-	if cpu.p&0x80 == 0 {
-		t.Errorf("Expected Flag (Negative) N == 1, Actual N == %d\n", (cpu.p&0x80)>>7)
+	if !cpu.isNegative() {
+		t.Errorf("Expected Flag (Negative) N == true, Actual N == %v\n", cpu.n)
 	}
 
-	if cpu.p&2 != 0 {
-		t.Errorf("Expected Flag (Zero) Z == 0, Actual Z == %d\n", cpu.p&2)
+	if cpu.isZero() {
+		t.Errorf("Expected Flag (Zero) Z == true, Actual Z == %v\n", cpu.z)
 	}
 }
 
@@ -451,16 +446,16 @@ func TestASLZeroPage(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 4, cpu.mem[4])
 	}
 
-	if cpu.p&1 == 0 {
-		t.Errorf("Expected Flag (Carry) C == 1, Actual C == %d\n", cpu.p&1)
+	if !cpu.isCarry() {
+		t.Errorf("Expected Flag (Carry) C == true, Actual C == %v\n", cpu.c)
 	}
 
-	if cpu.p&0x80 == 1 {
-		t.Errorf("Expected Flag (Negative) N == 0, Actual N == %d\n", (cpu.p&0x80)>>7)
+	if cpu.isNegative() {
+		t.Errorf("Expected Flag (Negative) N == false, Actual N == %v\n", cpu.n)
 	}
 
-	if cpu.p&2 != 0 {
-		t.Errorf("Expected Flag (Zero) Z == 0, Actual Z == %d\n", cpu.p&2)
+	if cpu.isZero() {
+		t.Errorf("Expected Flag (Zero) Z == false, Actual Z == %v\n", cpu.z)
 	}
 
 }
@@ -479,16 +474,52 @@ func TestASLZeroPageX(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 4, cpu.mem[5])
 	}
 
-	if cpu.p&1 == 0 {
-		t.Errorf("Expected Flag (Carry) C == 1, Actual C == %d\n", cpu.p&1)
+	if !cpu.isCarry() {
+		t.Errorf("Expected Flag (Carry) C == true, Actual C == %v\n", cpu.c)
 	}
 
-	if cpu.p&0x80 == 1 {
-		t.Errorf("Expected Flag (Negative) N == 0, Actual N == %d\n", (cpu.p&0x80)>>7)
+	if cpu.isNegative() {
+		t.Errorf("Expected Flag (Negative) N == false, Actual N == %v\n", cpu.n)
 	}
 
-	if cpu.p&2 != 0 {
-		t.Errorf("Expected Flag (Zero) Z == 0, Actual Z == %d\n", cpu.p&2)
+	if cpu.isZero() {
+		t.Errorf("Expected Flag (Zero) Z == false, Actual Z == %v\n", cpu.z)
+	}
+
+}
+
+func TestASLAbsolute(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 10
+
+	cpu.mem[0] = aslAbs
+	//Value 1000 Dec
+	cpu.mem[1] = 0xe8
+	cpu.mem[2] = 0x03
+
+	cpu.mem[1000] = 128 // 1000 0000
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.mem[1000] != 0 {
+		t.Errorf("Expected %d, Actual %d\n", 0, cpu.mem[1000])
+	}
+
+	//if cpu.p&1 == 0 {
+	if !cpu.isCarry() {
+		t.Errorf("Expected Flag (Carry) C == true, Actual C == %v\n", cpu.c)
+	}
+
+	//if cpu.p&0x80 == 1 {
+	if cpu.isNegative() {
+		t.Errorf("Expected Flag (Negative) N == false, Actual N == %v\n", cpu.n)
+	}
+
+	//if (cpu.p&2)>>1 != 1 {
+	if !cpu.isZero() {
+		t.Errorf("Expected Flag (Zero) Z == true, Actual Z == %v\n", cpu.z)
 	}
 
 }

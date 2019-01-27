@@ -6,9 +6,9 @@ func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
 	result := val1 + val2
 
 	if result < val1 {
-		cpu.p |= 1
+		cpu.SetCarry()
 	} else {
-		cpu.p &= ^byte(1)
+		cpu.ClearCarry()
 	}
 
 	cpu.setOverflowStatus(val1, val2, result)
@@ -21,7 +21,6 @@ func (cpu *Cpu) readOpValue(loc uint16) byte {
 	mode := infoArray[opcode][AddressMode]
 	fmt.Printf("OP: %x, AM: %d\n", opcode, mode)
 	var v byte
-	//var memAdder uint16
 	switch mode {
 	case Acc:
 		v = cpu.a
@@ -73,6 +72,9 @@ func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) {
 		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
 		//to the base or not.
 		cpu.writeZpX(cpu.pc+1, value)
+	case Abs:
+		fmt.Println("MODE: ABS")
+		cpu.writeAbs(cpu.pc+1, value)
 	default:
 		fmt.Println("INVALID ADDRESSING MODE! (Write)")
 	}
@@ -124,10 +126,11 @@ func (cpu *Cpu) ASL() {
 
 	if isCarry {
 		fmt.Println("ASL: Setting Carry Flag")
-		cpu.p |= 1
+		cpu.SetCarry()
+
 	} else {
 		fmt.Println("ASL: Clearing Carry Flag")
-		cpu.p &= ^byte(1)
+		cpu.ClearCarry()
 	}
 
 	cpu.setNegativeStatus(v)
