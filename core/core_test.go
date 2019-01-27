@@ -438,6 +438,61 @@ func TestASLAcc(t *testing.T) {
 	}
 }
 
+func TestASLZeroPage(t *testing.T) {
+	cpu := newCpu()
+	cpu.mem[0] = aslZp
+	cpu.mem[1] = 4
+	cpu.mem[4] = 0x82 //1000 0010
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.mem[4] != 4 {
+		t.Errorf("Expected %d, Actual %d\n", 4, cpu.mem[4])
+	}
+
+	if cpu.p&1 == 0 {
+		t.Errorf("Expected Flag (Carry) C == 1, Actual C == %d\n", cpu.p&1)
+	}
+
+	if cpu.p&0x80 == 1 {
+		t.Errorf("Expected Flag (Negative) N == 0, Actual N == %d\n", (cpu.p&0x80)>>7)
+	}
+
+	if cpu.p&2 != 0 {
+		t.Errorf("Expected Flag (Zero) Z == 0, Actual Z == %d\n", cpu.p&2)
+	}
+
+}
+
+func TestASLZeroPageX(t *testing.T) {
+	cpu := newCpu()
+	cpu.x = 1
+	cpu.mem[0] = aslZpX
+	cpu.mem[1] = 4
+	cpu.mem[5] = 0x82 //1000 0010
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.mem[5] != 4 {
+		t.Errorf("Expected %d, Actual %d\n", 4, cpu.mem[5])
+	}
+
+	if cpu.p&1 == 0 {
+		t.Errorf("Expected Flag (Carry) C == 1, Actual C == %d\n", cpu.p&1)
+	}
+
+	if cpu.p&0x80 == 1 {
+		t.Errorf("Expected Flag (Negative) N == 0, Actual N == %d\n", (cpu.p&0x80)>>7)
+	}
+
+	if cpu.p&2 != 0 {
+		t.Errorf("Expected Flag (Zero) Z == 0, Actual Z == %d\n", cpu.p&2)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*16))
 	cpu.pc = 0

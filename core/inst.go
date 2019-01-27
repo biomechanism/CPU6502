@@ -21,6 +21,7 @@ func (cpu *Cpu) readOpValue(loc uint16) byte {
 	mode := infoArray[opcode][AddressMode]
 	fmt.Printf("OP: %x, AM: %d\n", opcode, mode)
 	var v byte
+	//var memAdder uint16
 	switch mode {
 	case Acc:
 		v = cpu.a
@@ -28,7 +29,7 @@ func (cpu *Cpu) readOpValue(loc uint16) byte {
 		fmt.Println("MODE: IMM")
 		v = cpu.readImm(cpu.pc + 1)
 	case Zp:
-		fmt.Println("MODE: ZP")
+		fmt.Println("MODE: ZP (Read)")
 		v = cpu.readZp(cpu.pc + 1)
 	case ZpX:
 		fmt.Println("MODE: ZPX")
@@ -53,14 +54,41 @@ func (cpu *Cpu) readOpValue(loc uint16) byte {
 		fmt.Println("MODE: INDY")
 		v = cpu.readIndY(cpu.pc + 1)
 	default:
-		fmt.Println("INVALID ADDRESSING MODE!")
+		fmt.Println("INVALID ADDRESSING MODE! (Read)")
 	}
 	return v
 }
 
-func (cpu *Cpu) writeToMem(value byte) {
-
+func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) {
+	opcode := cpu.mem[opcodeLoc]
+	mode := infoArray[opcode][AddressMode]
+	switch mode {
+	case Acc:
+		cpu.a = value
+	case Zp:
+		fmt.Println("MODE: ZP (Write)")
+		cpu.writeZp(cpu.pc+1, value)
+	case ZpX:
+		fmt.Println("MODE: ZPX (Write)")
+		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
+		//to the base or not.
+		cpu.writeZpX(cpu.pc+1, value)
+	default:
+		fmt.Println("INVALID ADDRESSING MODE! (Write)")
+	}
 }
+
+// func (cpu *Cpu) writeOpValue(mode int, value byte) {
+// 	// opcode := inst
+// 	// mode := infoArray[opcode][AddressMode]
+// 	switch mode {
+// 	case Acc:
+// 		cpu.a = value
+// 	default:
+// 		fmt.Println("INVALID ADDRESSING MODE!")
+// 	}
+
+// }
 
 func (cpu *Cpu) ADC() {
 	v := cpu.readOpValue(cpu.pc)
@@ -76,15 +104,34 @@ func (cpu *Cpu) AND() {
 }
 
 func (cpu *Cpu) ASL() {
+
 	v := cpu.readOpValue(cpu.pc)
+	fmt.Printf("ASL Value before Op: %d\n", v)
+
+	var isCarry bool = false
+
 	if (0x80 & v) > 0 {
+		isCarry = true
+
+	} else {
+		isCarry = false
+
+	}
+
+	v <<= 1
+
+	cpu.writeOpValue(cpu.pc, v)
+
+	if isCarry {
+		fmt.Println("ASL: Setting Carry Flag")
 		cpu.p |= 1
 	} else {
+		fmt.Println("ASL: Clearing Carry Flag")
 		cpu.p &= ^byte(1)
 	}
-	cpu.a <<= 1
-	cpu.setNegativeStatus(cpu.a)
-	cpu.setZeroStatus(cpu.a)
+
+	cpu.setNegativeStatus(v)
+	cpu.setZeroStatus(v)
 }
 
 func (cpu *Cpu) BCC() {

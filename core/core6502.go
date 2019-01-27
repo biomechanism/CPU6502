@@ -133,11 +133,18 @@ func (cpu *Cpu) readImm(loc uint16) byte {
 }
 
 func (cpu *Cpu) readZp(loc uint16) byte {
+	fmt.Printf("[ZeroPage] LOC: %d\n", loc)
+	fmt.Printf("[ZeroPage] LOC Val: %d\n", cpu.mem[loc])
+	v := cpu.mem[cpu.mem[loc]]
+	fmt.Printf("[ZeroPage] Final Val: %d\n", v)
 	return cpu.mem[cpu.mem[loc]]
 }
 
 func (cpu *Cpu) readZpX(loc uint16) byte {
+	fmt.Printf("[ZeroPageX] LOC: %d\n", loc)
+	fmt.Printf("[ZeroPageX] LOC Val: %d\n", cpu.mem[loc])
 	v := cpu.addWithCarry(cpu.mem[loc], cpu.x)
+	fmt.Printf("[ZeroPageX] Final Val: %d\n", cpu.mem[v])
 	return cpu.mem[v]
 }
 
