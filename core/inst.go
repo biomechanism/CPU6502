@@ -75,46 +75,37 @@ func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) {
 	case Abs:
 		fmt.Println("MODE: ABS")
 		cpu.writeAbs(cpu.pc+1, value)
+	case AbsX:
+		cpu.writeAbsX(cpu.pc+1, value)
 	default:
 		fmt.Println("INVALID ADDRESSING MODE! (Write)")
 	}
 }
 
-// func (cpu *Cpu) writeOpValue(mode int, value byte) {
-// 	// opcode := inst
-// 	// mode := infoArray[opcode][AddressMode]
-// 	switch mode {
-// 	case Acc:
-// 		cpu.a = value
-// 	default:
-// 		fmt.Println("INVALID ADDRESSING MODE!")
-// 	}
-
-// }
-
-func (cpu *Cpu) ADC() {
+func (cpu *Cpu) ADC() bool {
 	v := cpu.readOpValue(cpu.pc)
 	cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
 	cpu.setNegativeStatus(cpu.a)
+	return false
 }
 
-func (cpu *Cpu) AND() {
+func (cpu *Cpu) AND() bool {
 	v := cpu.readOpValue(cpu.pc)
 	cpu.a &= v
 	cpu.setNegativeStatus(cpu.a)
 	cpu.setZeroStatus(cpu.a)
+	return false
 }
 
-func (cpu *Cpu) ASL() {
+func (cpu *Cpu) ASL() bool {
 
 	v := cpu.readOpValue(cpu.pc)
 	fmt.Printf("ASL Value before Op: %d\n", v)
 
-	var isCarry bool = false
+	var isCarry bool
 
 	if (0x80 & v) > 0 {
 		isCarry = true
-
 	} else {
 		isCarry = false
 
@@ -135,216 +126,234 @@ func (cpu *Cpu) ASL() {
 
 	cpu.setNegativeStatus(v)
 	cpu.setZeroStatus(v)
+
+	return false
 }
 
-func (cpu *Cpu) BCC() {
-
+//FIXME: What about the auto increment after execution?
+func (cpu *Cpu) BCC() bool {
+	if !cpu.isCarry() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		//relAddr := cpu.mem[cpu.pc+1]
+		fmt.Printf("BCC Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BCC Fall Through\n")
+	return false
 }
 
-func (cpu *Cpu) BCS() {
-
+func (cpu *Cpu) BCS() bool {
+	if cpu.isCarry() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BCC Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BCC Fall Through\n")
+	return false
 }
 
-func (cpu *Cpu) BEQ() {
-
+func (cpu *Cpu) BEQ() bool {
+	return true
 }
 
-func (cpu *Cpu) BIT() {
-
+func (cpu *Cpu) BIT() bool {
+	return true
 }
 
-func (cpu *Cpu) BMI() {
-
+func (cpu *Cpu) BMI() bool {
+	return true
 }
 
-func (cpu *Cpu) BNE() {
-
+func (cpu *Cpu) BNE() bool {
+	return true
 }
 
-func (cpu *Cpu) BPL() {
-
+func (cpu *Cpu) BPL() bool {
+	return true
 }
 
-func (cpu *Cpu) BRK() {
-
+func (cpu *Cpu) BRK() bool {
+	return false
 }
 
-func (cpu *Cpu) BVC() {
-
+func (cpu *Cpu) BVC() bool {
+	return true
 }
 
-func (cpu *Cpu) BVS() {
-
+func (cpu *Cpu) BVS() bool {
+	return true
 }
 
-func (cpu *Cpu) CLC() {
-
+func (cpu *Cpu) CLC() bool {
+	return false
 }
 
-func (cpu *Cpu) CLD() {
-
+func (cpu *Cpu) CLD() bool {
+	return false
 }
 
-func (cpu *Cpu) CLI() {
-
+func (cpu *Cpu) CLI() bool {
+	return false
 }
 
-func (cpu *Cpu) CLV() {
-
+func (cpu *Cpu) CLV() bool {
+	return false
 }
 
-func (cpu *Cpu) CMP() {
-
+func (cpu *Cpu) CMP() bool {
+	return false
 }
 
-func (cpu *Cpu) CPX() {
-
+func (cpu *Cpu) CPX() bool {
+	return false
 }
 
-func (cpu *Cpu) CPY() {
-
+func (cpu *Cpu) CPY() bool {
+	return false
 }
 
-func (cpu *Cpu) DEC() {
-
+func (cpu *Cpu) DEC() bool {
+	return false
 }
 
-func (cpu *Cpu) DEX() {
-
+func (cpu *Cpu) DEX() bool {
+	return false
 }
 
-func (cpu *Cpu) DEY() {
-
+func (cpu *Cpu) DEY() bool {
+	return false
 }
 
-func (cpu *Cpu) EOR() {
-
+func (cpu *Cpu) EOR() bool {
+	return false
 }
 
-func (cpu *Cpu) INC() {
-
+func (cpu *Cpu) INC() bool {
+	return false
 }
 
-func (cpu *Cpu) INX() {
-
+func (cpu *Cpu) INX() bool {
+	return false
 }
 
-func (cpu *Cpu) INY() {
-
+func (cpu *Cpu) INY() bool {
+	return false
 }
 
-func (cpu *Cpu) JMP() {
-
+func (cpu *Cpu) JMP() bool {
+	return true
 }
 
-func (cpu *Cpu) JSR() {
-
+func (cpu *Cpu) JSR() bool {
+	return true
 }
 
-func (cpu *Cpu) LDA() {
-
+func (cpu *Cpu) LDA() bool {
+	return false
 }
 
-func (cpu *Cpu) LDX() {
-
+func (cpu *Cpu) LDX() bool {
+	return false
 }
 
-func (cpu *Cpu) LDY() {
-
+func (cpu *Cpu) LDY() bool {
+	return false
 }
 
-func (cpu *Cpu) LSR() {
-
+func (cpu *Cpu) LSR() bool {
+	return false
 }
 
-func (cpu *Cpu) NOP() {
-
+func (cpu *Cpu) NOP() bool {
+	return false
 }
 
-func (cpu *Cpu) ORA() {
-
+func (cpu *Cpu) ORA() bool {
+	return false
 }
 
-func (cpu *Cpu) PHA() {
-
+func (cpu *Cpu) PHA() bool {
+	return false
 }
 
-func (cpu *Cpu) PHP() {
-
+func (cpu *Cpu) PHP() bool {
+	return false
 }
 
-func (cpu *Cpu) PLA() {
-
+func (cpu *Cpu) PLA() bool {
+	return false
 }
 
-func (cpu *Cpu) PLP() {
-
+func (cpu *Cpu) PLP() bool {
+	return false
 }
 
-func (cpu *Cpu) ROL() {
-
+func (cpu *Cpu) ROL() bool {
+	return false
 }
 
-func (cpu *Cpu) ROR() {
-
+func (cpu *Cpu) ROR() bool {
+	return false
 }
 
-func (cpu *Cpu) RTI() {
-
+func (cpu *Cpu) RTI() bool {
+	return true
 }
 
-func (cpu *Cpu) RTS() {
-
+func (cpu *Cpu) RTS() bool {
+	return true
 }
 
-func (cpu *Cpu) SBC() {
-
+func (cpu *Cpu) SBC() bool {
+	return false
 }
 
-func (cpu *Cpu) SEC() {
-
+func (cpu *Cpu) SEC() bool {
+	return false
 }
 
-func (cpu *Cpu) SED() {
-
+func (cpu *Cpu) SED() bool {
+	return false
 }
 
-func (cpu *Cpu) SEI() {
-
+func (cpu *Cpu) SEI() bool {
+	return false
 }
 
-func (cpu *Cpu) STA() {
-
+func (cpu *Cpu) STA() bool {
+	return false
 }
 
-func (cpu *Cpu) STX() {
-
+func (cpu *Cpu) STX() bool {
+	return false
 }
 
-func (cpu *Cpu) STY() {
-
+func (cpu *Cpu) STY() bool {
+	return false
 }
 
-func (cpu *Cpu) TAX() {
-
+func (cpu *Cpu) TAX() bool {
+	return false
 }
 
-func (cpu *Cpu) TAY() {
-
+func (cpu *Cpu) TAY() bool {
+	return false
 }
 
-func (cpu *Cpu) TSX() {
-
+func (cpu *Cpu) TSX() bool {
+	return false
 }
 
-func (cpu *Cpu) TXA() {
-
+func (cpu *Cpu) TXA() bool {
+	return false
 }
 
-func (cpu *Cpu) TXS() {
-
+func (cpu *Cpu) TXS() bool {
+	return false
 }
 
-func (cpu *Cpu) TYA() {
-
+func (cpu *Cpu) TYA() bool {
+	return false
 }

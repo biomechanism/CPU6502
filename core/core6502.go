@@ -243,3 +243,13 @@ func (cpu *Cpu) writeAbs(loc uint16, value byte) {
 	addr = addr | uint16(v1)
 	cpu.mem[addr] = value
 }
+
+func (cpu *Cpu) writeAbsX(loc uint16, value byte) {
+	v1 := cpu.mem[loc]
+	v2 := cpu.mem[loc+1]
+	var addr uint16
+	addr = uint16(v2) << 8
+	addr |= uint16(v1)
+	addr += uint16(cpu.x)
+	cpu.mem[addr] = value
+}

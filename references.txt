@@ -19,6 +19,10 @@ https://retrocomputing.stackexchange.com/questions/145/why-does-6502-indexed-lda
 
 https://en.wikibooks.org/wiki/6502_Assembly
 
+http://www.6502.org/tutorials/compare_beyond.html
+
+https://stackoverflow.com/questions/32917880/why-does-conditional-branching-in-asm-6502-have-limit-of-128-bytes
+
 
 
 

@@ -507,19 +507,116 @@ func TestASLAbsolute(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 0, cpu.mem[1000])
 	}
 
-	//if cpu.p&1 == 0 {
 	if !cpu.isCarry() {
 		t.Errorf("Expected Flag (Carry) C == true, Actual C == %v\n", cpu.c)
 	}
 
-	//if cpu.p&0x80 == 1 {
 	if cpu.isNegative() {
 		t.Errorf("Expected Flag (Negative) N == false, Actual N == %v\n", cpu.n)
 	}
 
-	//if (cpu.p&2)>>1 != 1 {
 	if !cpu.isZero() {
 		t.Errorf("Expected Flag (Zero) Z == true, Actual Z == %v\n", cpu.z)
+	}
+
+}
+
+func TestASLAbsoluteX(t *testing.T) {
+	cpu := newCpu()
+
+	cpu.a = 10
+
+	cpu.mem[0] = aslAbsX
+	//Value 1000 Dec
+	cpu.mem[1] = 0xe8
+	cpu.mem[2] = 0x03
+	cpu.x = 2
+
+	cpu.mem[1002] = 128 // 1000 0000
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.mem[1000] != 0 {
+		t.Errorf("Expected %d, Actual %d\n", 0, cpu.mem[1000])
+	}
+
+	if !cpu.isCarry() {
+		t.Errorf("Expected Flag (Carry) C == true, Actual C == %v\n", cpu.c)
+	}
+
+	if cpu.isNegative() {
+		t.Errorf("Expected Flag (Negative) N == false, Actual N == %v\n", cpu.n)
+	}
+
+	if !cpu.isZero() {
+		t.Errorf("Expected Flag (Zero) Z == true, Actual Z == %v\n", cpu.z)
+	}
+
+}
+
+func TestBCC(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 0x80
+	cpu.mem[19] = aslAcc
+	cpu.mem[20] = bcc
+	cpu.mem[21] = 4
+	cpu.mem[22] = aslAcc
+	cpu.mem[23] = bcc
+	cpu.mem[24] = 0xfa
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 22 {
+		t.Errorf("Expected %d, Actual %d\n", 22, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 17 {
+		t.Errorf("Expected %d, Actual %d\n", 17, cpu.pc)
+	}
+
+}
+
+func TestBCS(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 0x80
+	cpu.mem[19] = aslAcc
+	cpu.mem[20] = bcs
+	cpu.mem[21] = 2
+	cpu.mem[22] = aslAcc
+	cpu.mem[23] = bcs
+	cpu.mem[24] = 0xfa
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 22 {
+		t.Errorf("Expected %d, Actual %d\n", 22, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 25 {
+		t.Errorf("Expected %d, Actual %d\n", 25, cpu.pc)
 	}
 
 }

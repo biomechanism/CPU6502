@@ -234,9 +234,10 @@ func (cpu *Cpu) Decode() func() {
 
 }
 
-func executor(fn func(), cpu *Cpu) {
+func executor(fn func() bool, cpu *Cpu) {
 	opCode := cpu.mem[cpu.pc]
 	opSize := infoArray[opCode][Size]
-	fn()
-	cpu.pc += uint16(opSize)
+	if !fn() {
+		cpu.pc += uint16(opSize)
+	}
 }
