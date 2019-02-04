@@ -621,6 +621,105 @@ func TestBCS(t *testing.T) {
 
 }
 
+func TestBEQ(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 0x80
+	cpu.mem[19] = aslAcc
+	cpu.mem[20] = beq
+	cpu.mem[21] = 2
+	cpu.mem[22] = aslAcc
+	cpu.mem[23] = beq
+	cpu.mem[24] = 0xfa
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 22 {
+		t.Errorf("Expected %d, Actual %d\n", 22, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 17 {
+		t.Errorf("Expected %d, Actual %d\n", 17, cpu.pc)
+	}
+
+}
+
+func TestBMI(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 0xC0
+	cpu.mem[19] = aslAcc
+	cpu.mem[20] = bmi
+	cpu.mem[21] = 2
+	cpu.mem[22] = aslAcc
+	cpu.mem[23] = bmi
+	cpu.mem[24] = 0xfa
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 22 {
+		t.Errorf("Expected %d, Actual %d\n", 22, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 25 {
+		t.Errorf("Expected %d, Actual %d\n", 25, cpu.pc)
+	}
+
+}
+
+func TestBNE(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 0x80
+	cpu.mem[19] = aslAcc
+	cpu.mem[20] = bne
+	cpu.mem[21] = 2
+	cpu.mem[22] = aslAcc
+	cpu.mem[23] = bne
+	cpu.mem[24] = 0xfa
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 22 {
+		t.Errorf("Expected %d, Actual %d\n", 22, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 25 {
+		t.Errorf("Expected %d, Actual %d\n", 25, cpu.pc)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*16))
 	cpu.pc = 0

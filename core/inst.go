@@ -134,7 +134,6 @@ func (cpu *Cpu) ASL() bool {
 func (cpu *Cpu) BCC() bool {
 	if !cpu.isCarry() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		//relAddr := cpu.mem[cpu.pc+1]
 		fmt.Printf("BCC Branching; Rel val: %d\n", relAddr)
 		cpu.pc += uint16(relAddr)
 		return true
@@ -146,16 +145,24 @@ func (cpu *Cpu) BCC() bool {
 func (cpu *Cpu) BCS() bool {
 	if cpu.isCarry() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BCC Branching; Rel val: %d\n", relAddr)
+		fmt.Printf("BCS Branching; Rel val: %d\n", relAddr)
 		cpu.pc += uint16(relAddr)
 		return true
 	}
-	fmt.Print("BCC Fall Through\n")
+	fmt.Print("BCS Fall Through\n")
 	return false
 }
 
 func (cpu *Cpu) BEQ() bool {
-	return true
+	if cpu.isZero() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BEQ Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BEQ Fall Through\n")
+	return false
+
 }
 
 func (cpu *Cpu) BIT() bool {
@@ -163,11 +170,25 @@ func (cpu *Cpu) BIT() bool {
 }
 
 func (cpu *Cpu) BMI() bool {
-	return true
+	if cpu.isNegative() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BMI Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BMI Fall Through\n")
+	return false
 }
 
 func (cpu *Cpu) BNE() bool {
-	return true
+	if !cpu.isZero() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BNE Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BNE Fall Through\n")
+	return false
 }
 
 func (cpu *Cpu) BPL() bool {
