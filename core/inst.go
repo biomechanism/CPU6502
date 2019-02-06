@@ -192,10 +192,18 @@ func (cpu *Cpu) BNE() bool {
 }
 
 func (cpu *Cpu) BPL() bool {
-	return true
+	if !cpu.isNegative() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BPL Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BPL Fall Through\n")
+	return false
 }
 
 func (cpu *Cpu) BRK() bool {
+	//cpu.s =
 	return false
 }
 
