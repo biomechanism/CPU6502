@@ -203,7 +203,15 @@ func (cpu *Cpu) BPL() bool {
 }
 
 func (cpu *Cpu) BRK() bool {
-	//cpu.s =
+
+	pch := (cpu.pc & 0xFF00) >> 8
+	pcl := cpu.pc & 0x00FF
+	cpu.push(byte(pch))
+	cpu.push(byte(pcl))
+
+	cpu.b = true
+	cpu.pushStatustToStack()
+
 	return false
 }
 

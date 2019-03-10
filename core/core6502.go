@@ -253,3 +253,65 @@ func (cpu *Cpu) writeAbsX(loc uint16, value byte) {
 	addr += uint16(cpu.x)
 	cpu.mem[addr] = value
 }
+
+func (cpu *Cpu) pushStatustToStack() {
+	//N 	V 	- 	B 	D 	I 	Z 	C
+	reg := cpu.b2i(cpu.n)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.v)
+	reg = reg << 2
+	reg |= cpu.b2i(cpu.b)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.d)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.i)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.z)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.c)
+
+	loc := uint16(01<<4 | cpu.s)
+	cpu.writeZp(loc, reg)
+	cpu.s--
+}
+
+func (cpu *Cpu) popStatusFromStack() {
+	cpu.s++
+	loc := uint16(01<<4 | cpu.s)
+	val := cpu.readZp(loc)
+	cpu.n = cpu.i2b(val & 0x80)
+	cpu.v = cpu.i2b(val & 0x40)
+	cpu.b = cpu.i2b(val & 0x20)
+	cpu.d = cpu.i2b(val & 0x08)
+	cpu.i = cpu.i2b(val & 0x04)
+	cpu.z = cpu.i2b(val & 0x02)
+	cpu.c = cpu.i2b(val & 0x01)
+}
+
+func (cpu *Cpu) push(val byte) {
+	loc := uint16(01<<4 | cpu.s)
+	cpu.writeZp(loc, val)
+	cpu.s--
+}
+
+func (cpu *Cpu) pop() byte {
+	cpu.s++
+	loc := uint16(01<<4 | cpu.s)
+	return cpu.readZp(loc)
+}
+
+func (cpu *Cpu) b2i(val bool) byte {
+	if val == true {
+		return 1
+	}
+
+	return 0
+}
+
+func (cpu *Cpu) i2b(val byte) bool {
+	if val > 0 {
+		return true
+	}
+
+	return false
+}
