@@ -203,6 +203,16 @@ func (cpu *Cpu) BPL() bool {
 }
 
 //TODO: Need to check more details in the b status bit.
+//My understanding of the BRK command is, upon BRK execution
+//the program counter + 2 is pushed to the stack, one byte at a
+//time, first high byte and then the low byte. After this the
+//program status register is pushed to the stack. Once this is done
+//the B flag on the status register is set to indicate this interrupt
+//is the result of the BRK instruction and not another interrupt.
+//PC should then be set to $FFFE/$FFFF, the BRK interrupt vector address.
+//
+//NOTE: Not clear whether the B flag should be set and pushed or pushed and
+//then set.
 func (cpu *Cpu) BRK() bool {
 
 	pc := cpu.pc + 2
