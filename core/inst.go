@@ -212,7 +212,8 @@ func (cpu *Cpu) BPL() bool {
 //PC should then be set to $FFFE/$FFFF, the BRK interrupt vector address.
 //
 //NOTE: Not clear whether the B flag should be set and pushed or pushed and
-//then set.
+//then set. Although it sounds like it is only set on the stacks copy of
+//the status register.
 func (cpu *Cpu) BRK() bool {
 
 	pc := cpu.pc + 2
@@ -220,8 +221,9 @@ func (cpu *Cpu) BRK() bool {
 	pcl := pc & 0x00FF
 	cpu.push(byte(pch))
 	cpu.push(byte(pcl))
-	cpu.pushStatustToStack()
 	cpu.b = true
+	cpu.pushStatustToStack()
+	cpu.b = false
 
 	return false
 }
