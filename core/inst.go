@@ -202,15 +202,16 @@ func (cpu *Cpu) BPL() bool {
 	return false
 }
 
+//TODO: Need to check more details in the b status bit.
 func (cpu *Cpu) BRK() bool {
 
-	pch := (cpu.pc & 0xFF00) >> 8
-	pcl := cpu.pc & 0x00FF
+	pc := cpu.pc + 2
+	pch := (pc & 0xFF00) >> 8
+	pcl := pc & 0x00FF
 	cpu.push(byte(pch))
 	cpu.push(byte(pcl))
-
-	cpu.b = true
 	cpu.pushStatustToStack()
+	cpu.b = true
 
 	return false
 }
