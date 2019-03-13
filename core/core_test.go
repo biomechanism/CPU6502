@@ -808,6 +808,14 @@ func TestBRK(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 14, cpu.pc)
 	}
 
+	//Execute adcImm 1
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.a != 12 {
+		t.Errorf("Expected %d, Actual %d\n", 12, cpu.a)
+	}
+
 }
 
 func newCpu() *Cpu {
