@@ -217,15 +217,20 @@ func (cpu *Cpu) BPL() bool {
 func (cpu *Cpu) BRK() bool {
 
 	pc := cpu.pc + 2
-	pch := (pc & 0xFF00) >> 8
-	pcl := pc & 0x00FF
+	pch := uint8((pc & 0xFF00) >> 8)
+	pcl := uint8(pc & 0x00FF)
 	cpu.push(byte(pch))
 	cpu.push(byte(pcl))
 	cpu.b = true
 	cpu.pushStatustToStack()
 	cpu.b = false
 
-	return false
+	pcl = cpu.mem[0xFFFE]
+	pch = cpu.mem[0xFFFF]
+	//fmt.Printf("PCL %v PCH %v\n", pcl, pch)
+	cpu.pc = (uint16(pch) << 8) | uint16(pcl)
+	//cpu.pc = 0xFFFE
+	return true
 }
 
 func (cpu *Cpu) BVC() bool {
@@ -349,6 +354,17 @@ func (cpu *Cpu) ROR() bool {
 }
 
 func (cpu *Cpu) RTI() bool {
+
+	cpu.popStatusFromStack()
+	cpu.b = false
+
+	pcl := cpu.pop()
+	pch := cpu.pop()
+
+	fmt.Printf("RTI: PCL %v, PCH %v\n", pcl, pch)
+
+	cpu.pc = (uint16(pch) << 8) | uint16(pcl)
+
 	return true
 }
 

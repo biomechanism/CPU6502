@@ -753,8 +753,65 @@ func TestBPL(t *testing.T) {
 
 }
 
+func TestBRK(t *testing.T) {
+	cpu := newCpu()
+
+	//ISR Vector
+	cpu.mem[0xFFFE] = uint8(0x00) //pcl
+	cpu.mem[0xFFFF] = uint8(0x10) //pch
+
+	//ISR
+	cpu.mem[0x1000] = adcImm
+	cpu.mem[0x1001] = 4
+	cpu.mem[0x1002] = rti
+
+	cpu.pc = 10
+	cpu.a = 2
+	cpu.mem[10] = adcImm
+	cpu.mem[11] = 5
+
+	cpu.mem[12] = brk
+	cpu.mem[13] = nop
+
+	cpu.mem[14] = adcImm
+	cpu.mem[15] = 1
+
+	//Execute adcImm 5
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 7 {
+		t.Errorf("Expected %d, Actual %d\n", 7, cpu.a)
+	}
+
+	//Execute brk
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 0x1000 {
+		t.Errorf("Expected %d, Actual %d\n", 4096, cpu.pc)
+	}
+
+	//Execute adcImm 4
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.a != 11 {
+		t.Errorf("Expected %d, Actual %d\n", 11, cpu.a)
+	}
+
+	//Execute rti
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 14 {
+		t.Errorf("Expected %d, Actual %d\n", 14, cpu.pc)
+	}
+
+}
+
 func newCpu() *Cpu {
-	cpu := NewCPU(make([]byte, 1024*16))
+	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
 	return cpu
 }

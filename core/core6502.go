@@ -271,14 +271,14 @@ func (cpu *Cpu) pushStatustToStack() {
 	reg |= cpu.b2i(cpu.c)
 
 	loc := uint16(01<<4 | cpu.s)
-	cpu.writeZp(loc, reg)
+	cpu.writeImm(loc, reg)
 	cpu.s--
 }
 
 func (cpu *Cpu) popStatusFromStack() {
 	cpu.s++
 	loc := uint16(01<<4 | cpu.s)
-	val := cpu.readZp(loc)
+	val := cpu.readImm(loc)
 	cpu.n = cpu.i2b(val & 0x80)
 	cpu.v = cpu.i2b(val & 0x40)
 	cpu.b = cpu.i2b(val & 0x20)
@@ -289,15 +289,17 @@ func (cpu *Cpu) popStatusFromStack() {
 }
 
 func (cpu *Cpu) push(val byte) {
-	loc := uint16(01<<4 | cpu.s)
-	cpu.writeZp(loc, val)
+	fmt.Printf("Pushing %v to stack (%v)\n", val, cpu.s)
+	loc := uint16(cpu.s)
+	cpu.writeImm(loc, val)
 	cpu.s--
 }
 
 func (cpu *Cpu) pop() byte {
 	cpu.s++
-	loc := uint16(01<<4 | cpu.s)
-	return cpu.readZp(loc)
+	fmt.Printf("Popping %v from stack (%v)\n", cpu.readImm(uint16(cpu.s)), cpu.s)
+	loc := uint16(cpu.s)
+	return cpu.readImm(loc)
 }
 
 func (cpu *Cpu) b2i(val bool) byte {
