@@ -818,6 +818,80 @@ func TestBRK(t *testing.T) {
 
 }
 
+func TestBVC(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 125
+
+	cpu.mem[19] = adcImm
+	cpu.mem[20] = 1 //No overflow, expect to branch
+	cpu.mem[21] = bvc
+	cpu.mem[22] = 19
+
+	cpu.mem[40] = adcImm
+	cpu.mem[41] = 10 //Overflow, expect not to branch
+	cpu.mem[42] = bvc
+	cpu.mem[43] = 7
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 40 {
+		t.Errorf("Expected %d, Actual %d\n", 40, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 44 {
+		t.Errorf("Expected %d, Actual %d\n", 44, cpu.pc)
+	}
+
+}
+
+func TestBVS(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 19
+	cpu.a = 125
+
+	cpu.mem[19] = adcImm
+	cpu.mem[20] = 1 //No overflow, expect not to branch
+	cpu.mem[21] = bvs
+	cpu.mem[22] = 19
+
+	cpu.mem[23] = adcImm
+	cpu.mem[24] = 10 //Overflow, expect to branch
+	cpu.mem[25] = bvs
+	cpu.mem[26] = 5
+
+	inst := cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 23 {
+		t.Errorf("Expected %d, Actual %d\n", 23, cpu.pc)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 30 {
+		t.Errorf("Expected %d, Actual %d\n", 30, cpu.pc)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0

@@ -234,11 +234,25 @@ func (cpu *Cpu) BRK() bool {
 }
 
 func (cpu *Cpu) BVC() bool {
-	return true
+	if !cpu.isOverflow() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BVC Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BPL Fall Through\n")
+	return false
 }
 
 func (cpu *Cpu) BVS() bool {
-	return true
+	if cpu.isOverflow() {
+		relAddr := int8(cpu.mem[cpu.pc+1])
+		fmt.Printf("BVS Branching; Rel val: %d\n", relAddr)
+		cpu.pc += uint16(relAddr)
+		return true
+	}
+	fmt.Print("BPS Fall Through\n")
+	return false
 }
 
 func (cpu *Cpu) CLC() bool {
