@@ -51,6 +51,22 @@ func (cpu *Cpu) ClearCarry() {
 	cpu.c = false
 }
 
+func (cpu *Cpu) SetDecimalMode() {
+	cpu.d = true
+}
+
+func (cpu *Cpu) ClearDecimalMode() {
+	cpu.d = false
+}
+
+func (cpu *Cpu) SetIRQDisable() {
+	cpu.i = true
+}
+
+func (cpu *Cpu) ClearIRQDisable() {
+	cpu.i = false
+}
+
 func (cpu *Cpu) SetNZStatus(value byte) {
 	// if int8(value) < 0 {
 	// 	cpu.p |= 1 << 7

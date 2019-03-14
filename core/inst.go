@@ -256,19 +256,27 @@ func (cpu *Cpu) BVS() bool {
 }
 
 func (cpu *Cpu) CLC() bool {
-	return false
+	cpu.ClearCarry()
+	cpu.pc++
+	return true
 }
 
 func (cpu *Cpu) CLD() bool {
-	return false
+	cpu.ClearDecimalMode()
+	cpu.pc++
+	return true
 }
 
 func (cpu *Cpu) CLI() bool {
-	return false
+	cpu.ClearIRQDisable()
+	cpu.pc++
+	return true
 }
 
 func (cpu *Cpu) CLV() bool {
-	return false
+	cpu.clearOverflowStatus()
+	cpu.pc++
+	return true
 }
 
 func (cpu *Cpu) CMP() bool {
