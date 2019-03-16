@@ -16,10 +16,27 @@ func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
 	return result
 }
 
+func (cpu *Cpu) subWithBorrow(val1, val2 byte) byte {
+	result := val1 - val2
+
+	cpu.setBorrowStatus(val1, val2)
+	cpu.setNegativeStatus(result)
+	cpu.setZeroStatus(result)
+
+	if result > val1 {
+		cpu.SetCarry()
+	} else {
+		cpu.ClearCarry()
+	}
+
+	cpu.setOverflowStatus(val1, val2, result)
+	return result
+}
+
 func (cpu *Cpu) readOpValue(loc uint16) byte {
 	opcode := cpu.mem[loc]
 	mode := infoArray[opcode][AddressMode]
-	fmt.Printf("OP: %x, AM: %d\n", opcode, mode)
+	fmt.Printf("OP: %x, AM: %d, LOC: %v\n", opcode, mode, loc)
 	var v byte
 	switch mode {
 	case Acc:
@@ -255,24 +272,28 @@ func (cpu *Cpu) BVS() bool {
 	return false
 }
 
+//No tests yet
 func (cpu *Cpu) CLC() bool {
 	cpu.ClearCarry()
 	cpu.pc++
 	return true
 }
 
+//No tests yet
 func (cpu *Cpu) CLD() bool {
 	cpu.ClearDecimalMode()
 	cpu.pc++
 	return true
 }
 
+//No tests yet
 func (cpu *Cpu) CLI() bool {
 	cpu.ClearIRQDisable()
 	cpu.pc++
 	return true
 }
 
+//No tests yet
 func (cpu *Cpu) CLV() bool {
 	cpu.clearOverflowStatus()
 	cpu.pc++
@@ -280,6 +301,12 @@ func (cpu *Cpu) CLV() bool {
 }
 
 func (cpu *Cpu) CMP() bool {
+	acc := cpu.a
+	mem := cpu.readOpValue(cpu.pc)
+	result := acc - mem
+	cpu.setNegativeStatus(result)
+	cpu.setBorrowStatus(acc, mem)
+	cpu.setZeroStatus(result)
 	return false
 }
 
@@ -395,6 +422,7 @@ func (cpu *Cpu) RTS() bool {
 }
 
 func (cpu *Cpu) SBC() bool {
+
 	return false
 }
 

@@ -133,6 +133,17 @@ func (cpu *Cpu) setCarryStatus(val1, val2, result byte) {
 
 }
 
+//Need to double check the logic for this
+func (cpu *Cpu) setBorrowStatus(val1, val2 byte) {
+	val3 := val1 - val2
+	fmt.Printf("CHECKING BORROW - v1: %v, v2: %v, v3: %v\n", val1, val2, val3)
+	if val3 > val1 {
+		cpu.c = true
+	} else {
+		cpu.c = false
+	}
+}
+
 func (cpu *Cpu) clearOverflowStatus() {
 	cpu.v = false
 }
@@ -164,6 +175,7 @@ func (cpu *Cpu) isZero() bool {
 }
 
 func (cpu *Cpu) readImm(loc uint16) byte {
+	fmt.Printf("[Immediate] LOC: %d\n", loc)
 	return cpu.mem[loc]
 }
 

@@ -892,6 +892,43 @@ func TestBVS(t *testing.T) {
 
 }
 
+func TestCMP(t *testing.T) {
+	println(" --- EXeCUTING CMP TEST ---")
+	cpu := newCpu()
+	cpu.a = 10
+	cpu.pc = 20
+	cpu.mem[20] = cmpImm
+	cpu.mem[21] = 5
+
+	cpu.mem[22] = cmpImm
+	cpu.mem[23] = 10
+
+	cpu.mem[24] = cmpImm
+	cpu.mem[25] = 15
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.c || cpu.z || cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, false, false, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.c || !cpu.z || cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, true, false, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if !cpu.c || cpu.z || !cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", true, false, true, cpu.c, cpu.z, cpu.n)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
