@@ -174,6 +174,23 @@ func (cpu *Cpu) isZero() bool {
 	return cpu.z
 }
 
+func (cpu *Cpu) readOpAddrAbs(loc uint16) uint16 {
+	return cpu.addr(loc)
+}
+
+func (cpu *Cpu) readOpAddrInd(loc uint16) uint16 {
+	addr := cpu.addr(loc)
+	finalAddr := cpu.addr(addr)
+	return finalAddr
+}
+
+func (cpu *Cpu) addr(loc uint16) uint16 {
+	pcl := cpu.mem[loc]
+	pch := cpu.mem[loc+1]
+	addr := uint16(pch)<<8 | uint16(pcl)
+	return addr
+}
+
 func (cpu *Cpu) readImm(loc uint16) byte {
 	fmt.Printf("[Immediate] LOC: %d\n", loc)
 	return cpu.mem[loc]

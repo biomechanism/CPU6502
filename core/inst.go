@@ -33,6 +33,20 @@ func (cpu *Cpu) subWithBorrow(val1, val2 byte) byte {
 	return result
 }
 
+func (cpu *Cpu) readOpAddr(loc uint16) uint16 {
+	opcode := cpu.mem[loc]
+	mode := infoArray[opcode][AddressMode]
+	switch mode {
+	case Abs:
+		return cpu.readOpAddrAbs(cpu.pc + 1)
+	case Ind:
+		return cpu.readOpAddrInd(cpu.pc + 1)
+	default:
+		fmt.Println("INVALID ADDRESSING MODE! (Read)")
+		return 0
+	}
+}
+
 func (cpu *Cpu) readOpValue(loc uint16) byte {
 	opcode := cpu.mem[loc]
 	mode := infoArray[opcode][AddressMode]
@@ -311,62 +325,126 @@ func (cpu *Cpu) CMP() bool {
 }
 
 func (cpu *Cpu) CPX() bool {
+	x := cpu.x
+	mem := cpu.readOpValue(cpu.pc)
+	result := x - mem
+	cpu.setNegativeStatus(result)
+	cpu.setBorrowStatus(x, mem)
+	cpu.setZeroStatus(result)
 	return false
 }
 
 func (cpu *Cpu) CPY() bool {
+	y := cpu.y
+	mem := cpu.readOpValue(cpu.pc)
+	result := y - mem
+	cpu.setNegativeStatus(result)
+	cpu.setBorrowStatus(y, mem)
+	cpu.setZeroStatus(result)
 	return false
 }
 
 func (cpu *Cpu) DEC() bool {
+	val := cpu.readOpValue(cpu.pc)
+	val--
+	cpu.writeOpValue(cpu.pc, val)
+	cpu.setNegativeStatus(val)
+	cpu.setZeroStatus(val)
 	return false
 }
 
 func (cpu *Cpu) DEX() bool {
+	cpu.x--
+	cpu.setNegativeStatus(cpu.x)
+	cpu.setZeroStatus(cpu.x)
 	return false
 }
 
 func (cpu *Cpu) DEY() bool {
+	cpu.y--
+	cpu.setNegativeStatus(cpu.y)
+	cpu.setZeroStatus(cpu.y)
 	return false
 }
 
 func (cpu *Cpu) EOR() bool {
+	val := cpu.readOpValue(cpu.pc)
+	cpu.a ^= val
+	cpu.setNegativeStatus(cpu.a)
+	cpu.setZeroStatus(cpu.a)
 	return false
 }
 
 func (cpu *Cpu) INC() bool {
+	val := cpu.readOpValue(cpu.pc)
+	val++
+	cpu.writeOpValue(cpu.pc, val)
+	cpu.setNegativeStatus(val)
+	cpu.setZeroStatus(val)
 	return false
 }
 
 func (cpu *Cpu) INX() bool {
+	cpu.x++
+	cpu.setNegativeStatus(cpu.x)
+	cpu.setZeroStatus(cpu.x)
 	return false
 }
 
 func (cpu *Cpu) INY() bool {
+	cpu.y++
+	cpu.setNegativeStatus(cpu.y)
+	cpu.setZeroStatus(cpu.y)
 	return false
 }
 
+//FIXME: Need a read address call
 func (cpu *Cpu) JMP() bool {
+	addr := cpu.readOpAddr(cpu.pc)
+	cpu.pc = addr
 	return true
 }
 
 func (cpu *Cpu) JSR() bool {
+	addr := cpu.readOpAddr(cpu.pc)
+	returnAddr := cpu.pc + 2
+	pcl := byte(returnAddr & 0x00FF)
+	pch := byte(returnAddr >> 8)
+	cpu.push(pch)
+	cpu.push(pcl)
+	cpu.pc = addr
 	return true
 }
 
 func (cpu *Cpu) LDA() bool {
+	val := cpu.readOpValue(cpu.pc)
+	cpu.a = val
+	cpu.setNegativeStatus(val)
+	cpu.setZeroStatus(val)
 	return false
 }
 
 func (cpu *Cpu) LDX() bool {
+	val := cpu.readOpValue(cpu.pc)
+	cpu.x = val
+	cpu.setNegativeStatus(val)
+	cpu.setZeroStatus(val)
 	return false
 }
 
 func (cpu *Cpu) LDY() bool {
+	val := cpu.readOpValue(cpu.pc)
+	cpu.y = val
+	cpu.setNegativeStatus(val)
+	cpu.setZeroStatus(val)
 	return false
 }
 
 func (cpu *Cpu) LSR() bool {
+	val := cpu.readOpValue(cpu.pc)
+	cpu.c = val&0x01 > 0
+	val >>= 1
+	cpu.writeOpValue(cpu.pc, val)
 	return false
 }
 

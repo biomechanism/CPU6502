@@ -929,6 +929,238 @@ func TestCMP(t *testing.T) {
 
 }
 
+func TestCPX(t *testing.T) {
+	println(" --- EXeCUTING CPX TEST ---")
+	cpu := newCpu()
+	cpu.x = 10
+	cpu.pc = 20
+	cpu.mem[20] = cpxImm
+	cpu.mem[21] = 5
+
+	cpu.mem[22] = cpxImm
+	cpu.mem[23] = 10
+
+	cpu.mem[24] = cpxImm
+	cpu.mem[25] = 15
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.c || cpu.z || cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, false, false, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.c || !cpu.z || cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, true, false, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if !cpu.c || cpu.z || !cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", true, false, true, cpu.c, cpu.z, cpu.n)
+	}
+
+}
+
+func TestCPY(t *testing.T) {
+	println(" --- EXeCUTING CPX TEST ---")
+	cpu := newCpu()
+	cpu.y = 10
+	cpu.pc = 20
+	cpu.mem[20] = cpyImm
+	cpu.mem[21] = 5
+
+	cpu.mem[22] = cpyImm
+	cpu.mem[23] = 10
+
+	cpu.mem[24] = cpyImm
+	cpu.mem[25] = 15
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.c || cpu.z || cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, false, false, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.c || !cpu.z || cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, true, false, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if !cpu.c || cpu.z || !cpu.n {
+		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", true, false, true, cpu.c, cpu.z, cpu.n)
+	}
+
+}
+
+func TestDEC(t *testing.T) {
+
+	cpu := newCpu()
+
+	cpu.mem[4] = 10
+	cpu.pc = 20
+	cpu.mem[20] = decAbs
+	cpu.mem[21] = 4
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.mem[4] != 9 {
+		t.Errorf("Expected %d, Actual %d\n", 9, cpu.mem[4])
+	}
+
+}
+
+func TestDEX(t *testing.T) {
+	cpu := newCpu()
+	cpu.x = 4
+	cpu.pc = 20
+	cpu.mem[20] = dex
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.x != 3 {
+		t.Errorf("Expected %d, Actual %d\n", 3, cpu.x)
+	}
+
+}
+
+func TestDEY(t *testing.T) {
+	cpu := newCpu()
+	cpu.y = 4
+	cpu.pc = 20
+	cpu.mem[20] = dey
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.y != 3 {
+		t.Errorf("Expected %d, Actual %d\n", 3, cpu.y)
+	}
+
+}
+
+func TestEOR(t *testing.T) {
+	cpu := newCpu()
+	cpu.a = 0xF8
+	//cpu.mem[4] = 0xFF
+
+	cpu.pc = 20
+	cpu.mem[20] = eorImm
+	cpu.mem[21] = 0xFF
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 7 {
+		t.Errorf("Expected %d, Actual %d\n", 7, cpu.a)
+	}
+
+}
+
+func TestINX(t *testing.T) {
+	cpu := newCpu()
+	cpu.x = 4
+	cpu.pc = 20
+	cpu.mem[20] = inx
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.x != 5 {
+		t.Errorf("Expected %d, Actual %d\n", 5, cpu.x)
+	}
+
+}
+
+func TestINY(t *testing.T) {
+	cpu := newCpu()
+	cpu.y = 4
+	cpu.pc = 20
+	cpu.mem[20] = iny
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.y != 5 {
+		t.Errorf("Expected %d, Actual %d\n", 5, cpu.y)
+	}
+
+}
+
+func TestJMP(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = jmpAbs
+	cpu.mem[21] = 0x00
+	cpu.mem[22] = 0x10
+
+	cpu.mem[0x1000] = 0x00
+	cpu.mem[0x1001] = 0x20
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.pc != 0x1000 {
+		t.Errorf("Expected %v, Actual %v\n", 0x1000, cpu.pc)
+	}
+
+	cpu.pc = 20
+	cpu.mem[20] = jmpInd
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.pc != 0x2000 {
+		t.Errorf("Expected %v, Actual %v\n", 0x2000, cpu.pc)
+	}
+
+}
+
+func TestJSR(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = jsr
+	cpu.mem[21] = 0x01
+	cpu.mem[22] = 0x10
+
+	//cpu.mem[0x1000]
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.pc != 0x1001 {
+		t.Errorf("Expected %v, Actual %v\n", 0x1001, cpu.pc)
+	}
+
+	fmt.Printf("Stack Val: %v\n", cpu.mem[cpu.s+1])
+
+	pcl := cpu.mem[cpu.s+1]
+	pch := cpu.mem[cpu.s+2]
+
+	if pcl != 22 {
+		t.Errorf("Expected %v, Actual %v\n", 22, pcl)
+	}
+
+	if pch != 0x00 {
+		t.Errorf("Expected %v, Actual %v\n", 0, pch)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
