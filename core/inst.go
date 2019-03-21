@@ -453,22 +453,30 @@ func (cpu *Cpu) NOP() bool {
 }
 
 func (cpu *Cpu) ORA() bool {
+	val := cpu.readOpValue(cpu.pc)
+	cpu.a |= val
+	cpu.setNegativeStatus(cpu.a)
+	cpu.setZeroStatus(cpu.a)
 	return false
 }
 
 func (cpu *Cpu) PHA() bool {
+	cpu.push(cpu.a)
 	return false
 }
 
 func (cpu *Cpu) PHP() bool {
+	cpu.pushStatustToStack()
 	return false
 }
 
 func (cpu *Cpu) PLA() bool {
+	cpu.a = cpu.pop()
 	return false
 }
 
 func (cpu *Cpu) PLP() bool {
+	cpu.popStatusFromStack()
 	return false
 }
 
