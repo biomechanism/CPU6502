@@ -111,7 +111,7 @@ var infoArray = [][5]int{
 
 	{pha, 1, 3, 0, Imp},
 	{eorImm, 2, 2, 0, Imm},
-	{lsrAcc, 1, 2, 0, Imp},
+	{lsrAcc, 1, 2, 0, Acc},
 	{fe4b, 0, 0, 0, 0},
 	{jmpAbs, 3, 3, 0, Abs},
 	{eorAbs, 3, 4, 0, Abs},

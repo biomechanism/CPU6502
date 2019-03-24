@@ -1161,6 +1161,67 @@ func TestJSR(t *testing.T) {
 
 }
 
+func TestLDA(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = ldaImm
+	cpu.mem[21] = 6
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 6 {
+		t.Errorf("Expected %v, Actual %v\n", 6, cpu.a)
+	}
+}
+
+func TestLDX(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = ldxImm
+	cpu.mem[21] = 7
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.x != 7 {
+		t.Errorf("Expected %v, Actual %v\n", 7, cpu.x)
+	}
+}
+
+func TestLDY(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = ldyImm
+	cpu.mem[21] = 8
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.y != 8 {
+		t.Errorf("Expected %v, Actual %v\n", 8, cpu.y)
+	}
+}
+
+func TestLSR(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.a = 4
+
+	cpu.mem[20] = lsrAcc
+	cpu.mem[21] = 32
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 2 {
+		t.Errorf("Expected %v, Actual %v\n", 2, cpu.a)
+	}
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
