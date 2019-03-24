@@ -1222,6 +1222,22 @@ func TestLSR(t *testing.T) {
 	}
 }
 
+func TestORA(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.a = 5
+
+	cpu.mem[20] = oraImm
+	cpu.mem[21] = 0x02
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 7 {
+		t.Errorf("Expected %v, Actual %v\n", 7, cpu.a)
+	}
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
