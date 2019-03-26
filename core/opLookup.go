@@ -153,7 +153,7 @@ func (cpu *Cpu) Decode() func() {
 		}
 	case pla:
 		return func() {
-			executor(cpu.PLP, cpu)
+			executor(cpu.PLA, cpu)
 		}
 	case plp:
 		return func() {

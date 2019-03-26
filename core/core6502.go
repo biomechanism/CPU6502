@@ -315,14 +315,32 @@ func (cpu *Cpu) pushStatustToStack() {
 	reg = reg << 1
 	reg |= cpu.b2i(cpu.c)
 
-	loc := uint16(01<<4 | cpu.s)
+	loc := uint16((01 << 4) | cpu.s)
 	cpu.writeImm(loc, reg)
 	cpu.s--
 }
 
+func (cpu *Cpu) readStatus() byte {
+	reg := cpu.b2i(cpu.n)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.v)
+	reg = reg << 2
+	reg |= cpu.b2i(cpu.b)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.d)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.i)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.z)
+	reg = reg << 1
+	reg |= cpu.b2i(cpu.c)
+
+	return reg
+}
+
 func (cpu *Cpu) popStatusFromStack() {
 	cpu.s++
-	loc := uint16(01<<4 | cpu.s)
+	loc := uint16((01 << 4) | cpu.s)
 	val := cpu.readImm(loc)
 	cpu.n = cpu.i2b(val & 0x80)
 	cpu.v = cpu.i2b(val & 0x40)
@@ -335,15 +353,15 @@ func (cpu *Cpu) popStatusFromStack() {
 
 func (cpu *Cpu) push(val byte) {
 	fmt.Printf("Pushing %v to stack (%v)\n", val, cpu.s)
-	loc := uint16(cpu.s)
+	loc := uint16((01 << 4) | cpu.s)
 	cpu.writeImm(loc, val)
 	cpu.s--
 }
 
 func (cpu *Cpu) pop() byte {
 	cpu.s++
-	fmt.Printf("Popping %v from stack (%v)\n", cpu.readImm(uint16(cpu.s)), cpu.s)
-	loc := uint16(cpu.s)
+	fmt.Printf("Popping %v from stack (%v)\n", cpu.readImm(uint16(01<<4|cpu.s)), cpu.s)
+	loc := uint16((01 << 4) | cpu.s)
 	return cpu.readImm(loc)
 }
 

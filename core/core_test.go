@@ -1238,6 +1238,72 @@ func TestORA(t *testing.T) {
 	}
 }
 
+func TestPHA(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.a = 5
+
+	cpu.mem[20] = pha
+	cpu.mem[21] = 0x02
+
+	inst := cpu.Decode()
+	inst()
+
+	stackVal := cpu.readImm(uint16((01 << 4) | (cpu.s + 1)))
+
+	if stackVal != 5 {
+		t.Errorf("Expected %v, Actual %v\n", 5, stackVal)
+	}
+
+}
+
+func TestPHP(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.mem[20] = php
+	cpu.mem[21] = 0x02
+
+	cpu.v = true
+	cpu.n = true
+	cpu.z = true
+
+	origStatus := cpu.readStatus()
+
+	inst := cpu.Decode()
+	inst()
+
+	loc := uint16((01 << 4) | (cpu.s + 1))
+	stackVal := cpu.readImm(loc)
+
+	if stackVal != origStatus {
+		t.Errorf("Expected %v, Actual %v\n", origStatus, stackVal)
+	}
+
+}
+
+func TestPLA(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = pla
+	cpu.mem[21] = 0x02
+
+	var val byte = 0xBE
+	//loc := uint16((0x01 << 4) | (cpu.s))
+	//cpu.writeImm(loc, val)
+	//cpu.s++
+
+	cpu.push(val)
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 0xBE {
+		t.Errorf("Expected %v, Actual %v\n", 0xBE, cpu.a)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
