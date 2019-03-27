@@ -481,7 +481,6 @@ func (cpu *Cpu) PLP() bool {
 }
 
 func (cpu *Cpu) ROL() bool {
-
 	val := cpu.readOpValue(cpu.pc)
 	fromCarry := cpu.b2i(cpu.c)
 	toCarry := val & 0x80
@@ -495,7 +494,6 @@ func (cpu *Cpu) ROL() bool {
 }
 
 func (cpu *Cpu) ROR() bool {
-	fmt.Println("-- ROR --")
 	val := cpu.readOpValue(cpu.pc)
 	fromCarry := cpu.b2i(cpu.c)
 	toCarry := val & 0x01
