@@ -1289,9 +1289,6 @@ func TestPLA(t *testing.T) {
 	cpu.mem[21] = 0x02
 
 	var val byte = 0xBE
-	//loc := uint16((0x01 << 4) | (cpu.s))
-	//cpu.writeImm(loc, val)
-	//cpu.s++
 
 	cpu.push(val)
 
@@ -1300,6 +1297,91 @@ func TestPLA(t *testing.T) {
 
 	if cpu.a != 0xBE {
 		t.Errorf("Expected %v, Actual %v\n", 0xBE, cpu.a)
+	}
+
+}
+
+func TestPLP(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+
+	cpu.mem[20] = plp
+	cpu.mem[21] = 0x02
+
+	cpu.push(194)
+
+	inst := cpu.Decode()
+	inst()
+
+	status := cpu.readStatus()
+	if status != 194 {
+		t.Errorf("Expected %v, Actual %v\n", 190, status)
+	}
+
+}
+
+func TestROL(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.a = 0xC0
+	cpu.c = false
+
+	cpu.mem[20] = rolAcc
+	cpu.mem[21] = rolAcc
+	cpu.mem[22] = rolAcc
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 0x80 {
+		t.Errorf("Expected %v, Actual %v\n", 0x80, cpu.a)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.a != 0x01 {
+		t.Errorf("Expected %v, Actual %v\n", 0x01, cpu.a)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.a != 0x03 {
+		t.Errorf("Expected %v, Actual %v\n", 0x03, cpu.a)
+	}
+}
+
+func TestROR(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.a = 0xC1
+	cpu.c = false
+
+	cpu.mem[20] = rorAcc
+	cpu.mem[21] = rorAcc
+	cpu.mem[22] = rorAcc
+
+	cpu.pc = 20
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 0x60 {
+		t.Errorf("Expected %v, Actual %v\n", 0x60, cpu.a)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.a != 0xB0 {
+		t.Errorf("Expected %v, Actual %v\n", 0xB0, cpu.a)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.a != 0x58 {
+		t.Errorf("Expected %v, Actual %v\n", 0x58, cpu.a)
 	}
 
 }

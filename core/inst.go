@@ -481,10 +481,30 @@ func (cpu *Cpu) PLP() bool {
 }
 
 func (cpu *Cpu) ROL() bool {
+
+	val := cpu.readOpValue(cpu.pc)
+	fromCarry := cpu.b2i(cpu.c)
+	toCarry := val & 0x80
+	newVal := val << 1
+	cpu.c = cpu.i2b(toCarry)
+	newVal |= fromCarry
+	cpu.setNegativeStatus(newVal)
+	cpu.setZeroStatus(newVal)
+	cpu.writeOpValue(cpu.pc, newVal)
 	return false
 }
 
 func (cpu *Cpu) ROR() bool {
+	fmt.Println("-- ROR --")
+	val := cpu.readOpValue(cpu.pc)
+	fromCarry := cpu.b2i(cpu.c)
+	toCarry := val & 0x01
+	newVal := val >> 1
+	cpu.c = cpu.i2b(toCarry)
+	newVal |= (fromCarry << 7)
+	cpu.setNegativeStatus(newVal)
+	cpu.setZeroStatus(newVal)
+	cpu.writeOpValue(cpu.pc, newVal)
 	return false
 }
 

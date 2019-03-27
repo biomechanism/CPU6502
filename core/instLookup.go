@@ -75,7 +75,7 @@ var infoArray = [][5]int{
 
 	{plp, 1, 4, 0, Imp},
 	{andImm, 2, 2, 0, Imm},
-	{rolAcc, 1, 2, 0, Imp},
+	{rolAcc, 1, 2, 0, Acc},
 	{fe2b, 0, 0, 0, 0},
 	{bitAbs, 3, 4, 0, Abs},
 	{andAbs, 3, 4, 0, Abs},
@@ -147,7 +147,7 @@ var infoArray = [][5]int{
 
 	{pla, 1, 4, 0, Imp},
 	{adcImm, 2, 2, 0, Imm},
-	{rorAcc, 1, 2, 0, Imp},
+	{rorAcc, 1, 2, 0, Acc},
 	{fe6b, 0, 0, 0, 0},
 	{jmpInd, 3, 5, 0, Ind},
 	{adcAbs, 3, 4, 0, Abs},
