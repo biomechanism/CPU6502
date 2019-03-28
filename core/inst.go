@@ -253,7 +253,7 @@ func (cpu *Cpu) BRK() bool {
 	cpu.push(byte(pch))
 	cpu.push(byte(pcl))
 	cpu.b = true
-	cpu.pushStatustToStack()
+	cpu.pushStatusToStack()
 	cpu.b = false
 
 	pcl = cpu.mem[0xFFFE]
@@ -466,7 +466,7 @@ func (cpu *Cpu) PHA() bool {
 }
 
 func (cpu *Cpu) PHP() bool {
-	cpu.pushStatustToStack()
+	cpu.pushStatusToStack()
 	return false
 }
 
@@ -522,6 +522,9 @@ func (cpu *Cpu) RTI() bool {
 }
 
 func (cpu *Cpu) RTS() bool {
+	pcl := cpu.pop()
+	pch := cpu.pop()
+	cpu.pc = ((uint16(pch) << 8) | uint16(pcl)) + 1
 	return true
 }
 

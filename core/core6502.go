@@ -299,7 +299,7 @@ func (cpu *Cpu) writeAbsX(loc uint16, value byte) {
 	cpu.mem[addr] = value
 }
 
-func (cpu *Cpu) pushStatustToStack() {
+func (cpu *Cpu) pushStatusToStack() {
 	//N 	V 	- 	B 	D 	I 	Z 	C
 	reg := cpu.b2i(cpu.n)
 	reg = reg << 1

@@ -1386,6 +1386,42 @@ func TestROR(t *testing.T) {
 
 }
 
+func TestRTI(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.mem[0x1000] = nop
+	cpu.mem[20] = rti
+
+	cpu.push(0x10) //pch
+	cpu.push(0x00) //pcl
+	cpu.pushStatusToStack()
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.pc != 0x1000 {
+		t.Errorf("Expected %v, Actual %v\n", 0x1000, cpu.pc)
+	}
+
+}
+
+func TestRTS(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.mem[0x1000] = nop
+	cpu.mem[20] = rts
+
+	cpu.push(0x10)
+	cpu.push(0x00)
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.pc != 0x1001 {
+		t.Errorf("Expected %v, Actual %v\n", 0x1001, cpu.pc)
+	}
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
