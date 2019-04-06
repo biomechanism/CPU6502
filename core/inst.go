@@ -398,7 +398,6 @@ func (cpu *Cpu) INY() bool {
 	return false
 }
 
-//FIXME: Need a read address call
 func (cpu *Cpu) JMP() bool {
 	addr := cpu.readOpAddr(cpu.pc)
 	cpu.pc = addr
@@ -529,7 +528,8 @@ func (cpu *Cpu) RTS() bool {
 }
 
 func (cpu *Cpu) SBC() bool {
-
+	v := cpu.readOpValue(cpu.pc)
+	cpu.a = cpu.subWithBorrow(cpu.a, cpu.subWithBorrow(v, cpu.getCarry()))
 	return false
 }
 

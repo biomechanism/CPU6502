@@ -1422,6 +1422,45 @@ func TestRTS(t *testing.T) {
 	}
 }
 
+func TestSBC(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.a = 10
+
+	cpu.mem[20] = sbcImm
+	cpu.mem[21] = 10
+
+	cpu.mem[22] = sbcImm
+	cpu.mem[23] = 1
+
+	inst := cpu.Decode()
+	inst()
+
+	if cpu.a != 0 {
+		t.Errorf("Expected %v, Actual %v\n", 0, cpu.a)
+	}
+
+	if cpu.z != true {
+		t.Errorf("Expected %v, Actual %v\n", true, cpu.z)
+	}
+
+	inst = cpu.Decode()
+	inst()
+
+	if cpu.c != true {
+		t.Errorf("Expected %v, Actual %v\n", true, cpu.c)
+	}
+
+	if cpu.n != true {
+		t.Errorf("Expected %v, Actual %v\n", true, cpu.n)
+	}
+
+	if cpu.z != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.z)
+	}
+
+}
+
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))
 	cpu.pc = 0
