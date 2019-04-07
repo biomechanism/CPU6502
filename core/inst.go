@@ -527,6 +527,7 @@ func (cpu *Cpu) RTS() bool {
 	return true
 }
 
+//Need more tests
 func (cpu *Cpu) SBC() bool {
 	v := cpu.readOpValue(cpu.pc)
 	cpu.a = cpu.subWithBorrow(cpu.a, cpu.subWithBorrow(v, cpu.getCarry()))
@@ -534,49 +535,80 @@ func (cpu *Cpu) SBC() bool {
 }
 
 func (cpu *Cpu) SEC() bool {
+	cpu.SetCarry()
 	return false
 }
 
 func (cpu *Cpu) SED() bool {
+	cpu.d = true
 	return false
 }
 
 func (cpu *Cpu) SEI() bool {
+	cpu.i = true
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) STA() bool {
+	cpu.writeOpValue(cpu.pc, cpu.a)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) STX() bool {
+	cpu.writeOpValue(cpu.pc, cpu.x)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) STY() bool {
+	cpu.writeOpValue(cpu.pc, cpu.y)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) TAX() bool {
+	cpu.x = cpu.a
+	cpu.setNegativeStatus(cpu.x)
+	cpu.setZeroStatus(cpu.x)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) TAY() bool {
+	cpu.y = cpu.a
+	cpu.setNegativeStatus(cpu.y)
+	cpu.setZeroStatus(cpu.y)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) TSX() bool {
+	cpu.x = cpu.s
+	cpu.setNegativeStatus(cpu.x)
+	cpu.setZeroStatus(cpu.x)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) TXA() bool {
+	cpu.a = cpu.x
+	cpu.setNegativeStatus(cpu.a)
+	cpu.setZeroStatus(cpu.a)
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) TXS() bool {
+	cpu.s = cpu.x
 	return false
 }
 
+//Needs tests
 func (cpu *Cpu) TYA() bool {
+	cpu.a = cpu.y
+	cpu.setNegativeStatus(cpu.a)
+	cpu.setZeroStatus(cpu.a)
 	return false
 }
