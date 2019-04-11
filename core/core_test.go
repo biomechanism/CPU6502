@@ -754,6 +754,7 @@ func TestBPL(t *testing.T) {
 }
 
 func TestBRK(t *testing.T) {
+	fmt.Println("===== START OF BRK TEST =====")
 	cpu := newCpu()
 
 	//ISR Vector
@@ -792,9 +793,13 @@ func TestBRK(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 4096, cpu.pc)
 	}
 
+	fmt.Println("=== AFTER BRK ===")
+
 	//Execute adcImm 4
 	inst = cpu.Decode()
+	fmt.Println("=== DECODED ADC ===")
 	inst()
+	fmt.Println("=== EXECUTED ADC ===")
 
 	if cpu.a != 11 {
 		t.Errorf("Expected %d, Actual %d\n", 11, cpu.a)

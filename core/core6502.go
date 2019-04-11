@@ -225,24 +225,26 @@ func (cpu *Cpu) readAbs(loc uint16) byte {
 	return cpu.mem[addr]
 }
 
-func (cpu *Cpu) readAbsX(loc uint16) byte {
+func (cpu *Cpu) readAbsX(loc uint16) (byte, int) {
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16
 	addr = uint16(v2) << 8
 	addr |= uint16(v1)
-	addr += uint16(cpu.x)
-	return cpu.mem[addr]
+	newAddr := addr + uint16(cpu.x)
+	cycle := boundaryCycles(addr, newAddr)
+	return cpu.mem[newAddr], cycle
 }
 
-func (cpu *Cpu) readAbsY(loc uint16) byte {
+func (cpu *Cpu) readAbsY(loc uint16) (byte, int) {
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16
 	addr = uint16(v2) << 8
 	addr |= uint16(v1)
-	addr += uint16(cpu.y)
-	return cpu.mem[addr]
+	newAddr := addr + uint16(cpu.y)
+	cycle := boundaryCycles(addr, newAddr)
+	return cpu.mem[newAddr], cycle
 }
 
 func (cpu *Cpu) readIndX(loc uint16) byte {
@@ -289,15 +291,40 @@ func (cpu *Cpu) writeAbs(loc uint16, value byte) {
 	cpu.mem[addr] = value
 }
 
-func (cpu *Cpu) writeAbsX(loc uint16, value byte) {
+func (cpu *Cpu) writeAbsX(loc uint16, value byte) int {
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16
 	addr = uint16(v2) << 8
 	addr |= uint16(v1)
-	addr += uint16(cpu.x)
-	cpu.mem[addr] = value
+	newAddr := addr + uint16(cpu.x)
+	cpu.mem[newAddr] = value
+	cycle := boundaryCycles(addr, newAddr)
+	return cycle
 }
+
+func (cpu *Cpu) writeAbsY(loc uint16, value byte) int {
+	v1 := cpu.mem[loc]
+	v2 := cpu.mem[loc+1]
+	var addr uint16
+	addr = uint16(v2) << 8
+	addr |= uint16(v1)
+	newAddr := addr + uint16(cpu.y)
+	cpu.mem[newAddr] = value
+	cycle := boundaryCycles(addr, newAddr)
+	return cycle
+}
+
+// func (cpu *Cpu) writeIndX(loc uint16, value byte) int {
+// 	zpIndex := cpu.mem[loc]
+// 	zpIndex += cpu.x
+// 	lowByte := cpu.mem[zpIndex]
+// 	hiByte := cpu.mem[zpIndex+1]
+// 	var addr = (uint16(hiByte) << 8) | uint16(lowByte)
+// 	cpu.mem[addr] = value
+// 	cycle := boundaryCycles(addr, newAddr)
+// 	return cycle
+// }
 
 func (cpu *Cpu) pushStatusToStack() {
 	//N 	V 	- 	B 	D 	I 	Z 	C
@@ -379,4 +406,14 @@ func (cpu *Cpu) i2b(val byte) bool {
 	}
 
 	return false
+}
+
+func boundaryCycles(addr1, addr2 uint16) int {
+	msb1 := addr1 & 0xff00
+	msb2 := addr2 & 0xff00
+	if msb1 == msb2 {
+		return 1
+	}
+
+	return 0
 }
