@@ -256,15 +256,17 @@ func (cpu *Cpu) readIndX(loc uint16) byte {
 	return cpu.mem[addr]
 }
 
-func (cpu *Cpu) readIndY(loc uint16) byte {
+//TODO: Need boundary tests
+func (cpu *Cpu) readIndY(loc uint16) (byte, int) {
 	var zpAddr uint16
 	v1 := cpu.mem[loc]
 	zpAddr = uint16(v1)
 	lowByte := cpu.mem[zpAddr]
 	hiByte := cpu.mem[zpAddr+1]
 	var addr = (uint16(hiByte) << 8) | uint16(lowByte)
-	addr += uint16(cpu.y)
-	return cpu.mem[addr]
+	newAddr := addr + uint16(cpu.y)
+	cycle := boundaryCycles(addr, newAddr)
+	return cpu.mem[newAddr], cycle
 }
 
 func (cpu *Cpu) writeImm(loc uint16, value byte) {

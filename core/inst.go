@@ -84,7 +84,7 @@ func (cpu *Cpu) readOpValue(loc uint16) (byte, int) {
 		v = cpu.readIndX(cpu.pc + 1)
 	case IndY:
 		fmt.Println("MODE: INDY")
-		v = cpu.readIndY(cpu.pc + 1)
+		v, c = cpu.readIndY(cpu.pc + 1)
 	default:
 		fmt.Println("INVALID ADDRESSING MODE! (Read)")
 	}
