@@ -355,7 +355,6 @@ func (cpu *Cpu) CLC() (bool, int) {
 	return true, cycles
 }
 
-//No tests yet
 func (cpu *Cpu) CLD() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
@@ -364,7 +363,6 @@ func (cpu *Cpu) CLD() (bool, int) {
 	return true, cycles
 }
 
-//No tests yet
 func (cpu *Cpu) CLI() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
@@ -373,7 +371,6 @@ func (cpu *Cpu) CLI() (bool, int) {
 	return true, cycles
 }
 
-//No tests yet
 func (cpu *Cpu) CLV() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]

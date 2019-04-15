@@ -911,25 +911,56 @@ func TestCMP(t *testing.T) {
 	cpu.mem[24] = cmpImm
 	cpu.mem[25] = 15
 
+	cpu.x = 2
+	cpu.mem[26] = cmpAbsX
+	cpu.mem[27] = 0xff
+	cpu.mem[28] = 0x01
+	cpu.mem[0x201] = 10
+
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.c || cpu.z || cpu.n {
 		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, false, false, cpu.c, cpu.z, cpu.n)
 	}
 
+	expectedCycles := infoArray[cmpImm][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 	inst = cpu.Decode()
-	inst()
+	cycles = inst()
 
 	if cpu.c || !cpu.z || cpu.n {
 		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", false, true, false, cpu.c, cpu.z, cpu.n)
 	}
 
 	inst = cpu.Decode()
-	inst()
+	cycles = inst()
 
 	if !cpu.c || cpu.z || !cpu.n {
 		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", true, false, true, cpu.c, cpu.z, cpu.n)
+	}
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	expectedCycles = infoArray[cmpAbsX][Cycles]
+	if cycles != expectedCycles+1 {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles+1, cycles)
+	}
+
+	cpu.mem[29] = cmpAbsX
+	cpu.mem[30] = 04
+	cpu.mem[31] = 01
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	expectedCycles = infoArray[cmpAbsX][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
@@ -1465,6 +1496,103 @@ func TestSBC(t *testing.T) {
 	}
 
 }
+
+func TestCLC(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.c = true
+
+	cpu.mem[20] = clc
+
+	inst := cpu.Decode()
+	cycles := inst()
+
+	if cpu.c != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.c)
+	}
+
+	if cycles != 2 {
+		t.Errorf("Expected %v, Actual %v\n", 2, cycles)
+	}
+
+}
+
+func TestCLD(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.d = true
+
+	cpu.mem[20] = cld
+
+	inst := cpu.Decode()
+	cycles := inst()
+
+	if cpu.d != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.d)
+	}
+
+	if cycles != 2 {
+		t.Errorf("Expected %v, Actual %v\n", 2, cycles)
+	}
+
+}
+
+func TestCLI(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.i = true
+
+	cpu.mem[20] = cli
+
+	inst := cpu.Decode()
+	cycles := inst()
+
+	if cpu.i != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.i)
+	}
+
+	if cycles != 2 {
+		t.Errorf("Expected %v, Actual %v\n", 2, cycles)
+	}
+
+}
+
+func TestCLV(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 20
+	cpu.v = true
+
+	cpu.mem[20] = clv
+
+	inst := cpu.Decode()
+	cycles := inst()
+
+	if cpu.v != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.v)
+	}
+
+	if cycles != 2 {
+		t.Errorf("Expected %v, Actual %v\n", 2, cycles)
+	}
+
+}
+
+// func TestCMP(t *testing.T) {
+// 	cpu := newCpu()
+// 	cpu.pc = 20
+// 	cpu.a = 4
+
+// 	cpu.mem[20] = cmpImm
+// 	cpu.mem[21] = 4
+
+// 	inst := cpu.Decode()
+// 	cycles := inst()
+
+// 	if cpu.z != true {
+// 		t.Errorf("Expected %v, Actual %v\n", true, cpu.z)
+// 	}
+
+// }
 
 func newCpu() *Cpu {
 	cpu := NewCPU(make([]byte, 1024*64))

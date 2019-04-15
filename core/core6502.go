@@ -233,6 +233,8 @@ func (cpu *Cpu) readAbsX(loc uint16) (byte, int) {
 	addr |= uint16(v1)
 	newAddr := addr + uint16(cpu.x)
 	cycle := boundaryCycles(addr, newAddr)
+	fmt.Printf(">>> ADDR: %v, NEWADDR: %v\n", addr, newAddr)
+	fmt.Printf(">>> BOUNDARY CYCLES: %v\n", cycle)
 	return cpu.mem[newAddr], cycle
 }
 
@@ -413,7 +415,7 @@ func (cpu *Cpu) i2b(val byte) bool {
 func boundaryCycles(addr1, addr2 uint16) int {
 	msb1 := addr1 & 0xff00
 	msb2 := addr2 & 0xff00
-	if msb1 == msb2 {
+	if msb1 != msb2 {
 		return 1
 	}
 
