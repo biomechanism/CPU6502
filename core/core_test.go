@@ -1130,10 +1130,15 @@ func TestDEX(t *testing.T) {
 	cpu.mem[20] = dex
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.x != 3 {
 		t.Errorf("Expected %d, Actual %d\n", 3, cpu.x)
+	}
+
+	expectedCycles := infoArray[dex][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
@@ -1145,10 +1150,15 @@ func TestDEY(t *testing.T) {
 	cpu.mem[20] = dey
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.y != 3 {
 		t.Errorf("Expected %d, Actual %d\n", 3, cpu.y)
+	}
+
+	expectedCycles := infoArray[dex][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
