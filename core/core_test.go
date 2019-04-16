@@ -1000,6 +1000,28 @@ func TestCPX(t *testing.T) {
 		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", true, false, true, cpu.c, cpu.z, cpu.n)
 	}
 
+	cpu.mem[26] = cpxZp
+	cpu.mem[27] = 10
+	inst = cpu.Decode()
+	cycles := inst()
+
+	expectedCycles := infoArray[cpxZp][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.mem[28] = cpxAbs
+	cpu.mem[29] = 10
+	inst = cpu.Decode()
+	cycles = inst()
+
+	expectedCycles = infoArray[cpxAbs][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestCPY(t *testing.T) {
@@ -1037,6 +1059,28 @@ func TestCPY(t *testing.T) {
 		t.Errorf("Expected Status C: %v, Z: %v, N: %v - Actual C: %v, Z: %v, N: %v\n", true, false, true, cpu.c, cpu.z, cpu.n)
 	}
 
+	cpu.mem[26] = cpyZp
+	cpu.mem[27] = 10
+	inst = cpu.Decode()
+	cycles := inst()
+
+	expectedCycles := infoArray[cpyZp][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.mem[28] = cpyAbs
+	cpu.mem[29] = 10
+	inst = cpu.Decode()
+	cycles = inst()
+
+	expectedCycles = infoArray[cpyAbs][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestDEC(t *testing.T) {
@@ -1049,12 +1093,34 @@ func TestDEC(t *testing.T) {
 	cpu.mem[21] = 4
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.mem[4] != 9 {
 		t.Errorf("Expected %d, Actual %d\n", 9, cpu.mem[4])
 	}
 
+	expectedCycles := infoArray[decAbs][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.x = 2
+	cpu.mem[23] = decAbsX
+	cpu.mem[24] = 40
+	cpu.mem[25] = 0
+	cpu.mem[42] = 3
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.mem[42] != 2 {
+		t.Errorf("Expected %d, Actual %d\n", 2, cpu.mem[42])
+	}
+
+	expectedCycles = infoArray[decAbsX][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
 }
 
 func TestDEX(t *testing.T) {

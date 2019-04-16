@@ -221,11 +221,13 @@ func (cpu *Cpu) readAbs(loc uint16) byte {
 	addr = uint16(v2)
 	addr = addr << 8
 	addr = addr | uint16(v1)
-	fmt.Printf("[ZeroPageX] Final Val: %d\n", cpu.mem[addr])
+	fmt.Printf("[Absolute] Final Val: %d\n", cpu.mem[addr])
 	return cpu.mem[addr]
 }
 
 func (cpu *Cpu) readAbsX(loc uint16) (byte, int) {
+	fmt.Printf("[AbsoluteX] LOC: %d\n", loc)
+	fmt.Printf("[AbsoluteX] LOC Val: %d\n", cpu.mem[loc])
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16

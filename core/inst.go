@@ -416,6 +416,7 @@ func (cpu *Cpu) CPY() (bool, int) {
 }
 
 func (cpu *Cpu) DEC() (bool, int) {
+	fmt.Println(">>>> DEC <<<<")
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
 	val, _ := cpu.readOpValue(cpu.pc)
