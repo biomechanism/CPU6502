@@ -237,6 +237,7 @@ func (cpu *Cpu) readAbsX(loc uint16) (byte, int) {
 	cycle := boundaryCycles(addr, newAddr)
 	fmt.Printf(">>> ADDR: %v, NEWADDR: %v\n", addr, newAddr)
 	fmt.Printf(">>> BOUNDARY CYCLES: %v\n", cycle)
+	fmt.Printf(">>> RETURNING VAL: %v\n", cpu.mem[newAddr])
 	return cpu.mem[newAddr], cycle
 }
 

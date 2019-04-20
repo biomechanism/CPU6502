@@ -449,6 +449,7 @@ func (cpu *Cpu) EOR() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
 	val, c := cpu.readOpValue(cpu.pc)
+	fmt.Printf("EOR VAL: %v\n", val)
 	cpu.a ^= val
 	cpu.setNegativeStatus(cpu.a)
 	cpu.setZeroStatus(cpu.a)

@@ -1173,10 +1173,55 @@ func TestEOR(t *testing.T) {
 	cpu.mem[21] = 0xFF
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.a != 7 {
 		t.Errorf("Expected %d, Actual %d\n", 7, cpu.a)
+	}
+
+	expectedCycles := infoArray[eorImm][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.x = 4
+	cpu.a = 0xFF
+	cpu.mem[22] = eorAbsX
+	cpu.mem[23] = 0xFF
+	cpu.mem[24] = 0x01
+	cpu.mem[0x0203] = 3
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.a != 0xfc {
+		t.Errorf("Expected %d, Actual %d\n", 0xfc, cpu.a)
+	}
+
+	expectedCycles = infoArray[eorAbsX][Cycles] + 1
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	//cpu.pc = 25
+	cpu.a = 42
+	cpu.y = 5
+	cpu.mem[25] = eorIndY
+	cpu.mem[26] = 40
+	cpu.mem[40] = 0x00
+	cpu.mem[41] = 0x01
+	cpu.mem[0x105] = 15
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.a != 37 {
+		t.Errorf("Expected %d, Actual %d\n", 37, cpu.a)
+	}
+
+	expectedCycles = infoArray[eorIndY][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
