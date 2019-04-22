@@ -1226,6 +1226,29 @@ func TestEOR(t *testing.T) {
 
 }
 
+func TestINC(t *testing.T) {
+	cpu := newCpu()
+	cpu.mem[20] = incAbs
+	cpu.mem[21] = 0
+	cpu.mem[22] = 0x10
+	cpu.mem[0x1000] = 7
+	cpu.pc = 20
+
+	inst := cpu.Decode()
+	cycles := inst()
+
+	if cpu.mem[0x1000] != 8 {
+		t.Errorf("Expected %d, Actual %d\n", 6, cpu.mem[0x1000])
+	}
+
+	expectedCycles := infoArray[incAbs][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+}
+
 func TestINX(t *testing.T) {
 	cpu := newCpu()
 	cpu.x = 4
@@ -1233,10 +1256,16 @@ func TestINX(t *testing.T) {
 	cpu.mem[20] = inx
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.x != 5 {
 		t.Errorf("Expected %d, Actual %d\n", 5, cpu.x)
+	}
+
+	expectedCycles := infoArray[inx][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
@@ -1248,10 +1277,16 @@ func TestINY(t *testing.T) {
 	cpu.mem[20] = iny
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.y != 5 {
 		t.Errorf("Expected %d, Actual %d\n", 5, cpu.y)
+	}
+
+	expectedCycles := infoArray[iny][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
@@ -1268,20 +1303,31 @@ func TestJMP(t *testing.T) {
 	cpu.mem[0x1001] = 0x20
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.pc != 0x1000 {
 		t.Errorf("Expected %v, Actual %v\n", 0x1000, cpu.pc)
+	}
+
+	expectedCycles := infoArray[jmpAbs][Cycles]
+
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 	cpu.pc = 20
 	cpu.mem[20] = jmpInd
 
 	inst = cpu.Decode()
-	inst()
+	cycles = inst()
 
 	if cpu.pc != 0x2000 {
 		t.Errorf("Expected %v, Actual %v\n", 0x2000, cpu.pc)
+	}
+
+	expectedCycles = infoArray[jmpInd][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
@@ -1294,10 +1340,8 @@ func TestJSR(t *testing.T) {
 	cpu.mem[21] = 0x01
 	cpu.mem[22] = 0x10
 
-	//cpu.mem[0x1000]
-
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.pc != 0x1001 {
 		t.Errorf("Expected %v, Actual %v\n", 0x1001, cpu.pc)
@@ -1305,6 +1349,7 @@ func TestJSR(t *testing.T) {
 
 	fmt.Printf("Stack Val: %v\n", cpu.mem[cpu.s+1])
 
+	//Ensure correct address has been pushed to the stack
 	pcl := cpu.mem[cpu.s+1]
 	pch := cpu.mem[cpu.s+2]
 
@@ -1314,6 +1359,11 @@ func TestJSR(t *testing.T) {
 
 	if pch != 0x00 {
 		t.Errorf("Expected %v, Actual %v\n", 0, pch)
+	}
+
+	expectedCycles := infoArray[jsr][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
 
 }
@@ -1326,11 +1376,36 @@ func TestLDA(t *testing.T) {
 	cpu.mem[21] = 6
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.a != 6 {
 		t.Errorf("Expected %v, Actual %v\n", 6, cpu.a)
 	}
+
+	expectedCycles := infoArray[ldaImm][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.mem[22] = ldaAbsX
+	cpu.mem[23] = 0xFF
+	cpu.mem[24] = 0x01
+	cpu.x = 1
+
+	cpu.mem[0x200] = 42
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.a != 42 {
+		t.Errorf("Expected %v, Actual %v\n", 42, cpu.a)
+	}
+
+	expectedCycles = infoArray[ldaAbsX][Cycles] + 1 //Page boundary crossed
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestLDX(t *testing.T) {
