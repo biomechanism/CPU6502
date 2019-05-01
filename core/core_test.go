@@ -1401,7 +1401,7 @@ func TestLDA(t *testing.T) {
 		t.Errorf("Expected %v, Actual %v\n", 42, cpu.a)
 	}
 
-	expectedCycles = infoArray[ldaAbsX][Cycles] + 1 //Page boundary crossed
+	expectedCycles = infoArray[ldaAbsX][Cycles] + 1 //Page boundary crossed, add 1
 	if cycles != expectedCycles {
 		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
 	}
@@ -1416,11 +1416,36 @@ func TestLDX(t *testing.T) {
 	cpu.mem[21] = 7
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.x != 7 {
 		t.Errorf("Expected %v, Actual %v\n", 7, cpu.x)
 	}
+
+	expectedCycles := infoArray[ldxImm][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.x = 0
+	cpu.y = 4
+	cpu.mem[0x203] = 8
+	cpu.mem[22] = ldxAbsY
+	cpu.mem[23] = 0xFF
+	cpu.mem[24] = 0x01
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.x != 8 {
+		t.Errorf("Expected %d, Actual %d\n", 8, cpu.x)
+	}
+
+	expectedCycles = infoArray[ldxAbsY][Cycles] + 1
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestLDY(t *testing.T) {
@@ -1431,11 +1456,36 @@ func TestLDY(t *testing.T) {
 	cpu.mem[21] = 8
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.y != 8 {
 		t.Errorf("Expected %v, Actual %v\n", 8, cpu.y)
 	}
+
+	expectedCycles := infoArray[ldyImm][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.x = 4
+	cpu.y = 0
+	cpu.mem[0x203] = 20
+	cpu.mem[22] = ldyAbsX
+	cpu.mem[23] = 0xFF
+	cpu.mem[24] = 0x01
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.y != 20 {
+		t.Errorf("Expected %v, Actual %v\n", 20, cpu.y)
+	}
+
+	expectedCycles = infoArray[ldyAbsX][Cycles] + 1
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestLSR(t *testing.T) {
