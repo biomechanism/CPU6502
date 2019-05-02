@@ -1494,14 +1494,37 @@ func TestLSR(t *testing.T) {
 	cpu.a = 4
 
 	cpu.mem[20] = lsrAcc
-	cpu.mem[21] = 32
+
+	cpu.x = 2
+	cpu.mem[21] = lsrAbsX
+	cpu.mem[22] = 0x00
+	cpu.mem[23] = 0x10
+	cpu.mem[0x1002] = 16
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.a != 2 {
 		t.Errorf("Expected %v, Actual %v\n", 2, cpu.a)
 	}
+
+	expectedCycles := infoArray[lsrAcc][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.mem[0x1002] != 8 {
+		t.Errorf("Expected %v, Actual %v\n", 8, cpu.mem[0x1002])
+	}
+
+	expectedCycles = infoArray[lsrAbsX][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestORA(t *testing.T) {
