@@ -1536,11 +1536,36 @@ func TestORA(t *testing.T) {
 	cpu.mem[21] = 0x02
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.a != 7 {
 		t.Errorf("Expected %v, Actual %v\n", 7, cpu.a)
 	}
+
+	expectedCycles := infoArray[oraImm][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
+	}
+
+	cpu.a = 6
+	cpu.x = 5
+	cpu.mem[22] = oraAbsX
+	cpu.mem[23] = 0xFF
+	cpu.mem[24] = 0x01
+	cpu.mem[0x204] = 8
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.a != 14 {
+		t.Errorf("Expected %v, Actual %v\n", 14, cpu.a)
+	}
+
+	expectedCycles = infoArray[oraAbsX][Cycles] + 1 //Page boundary crossed
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestPHA(t *testing.T) {
@@ -1552,12 +1577,17 @@ func TestPHA(t *testing.T) {
 	cpu.mem[21] = 0x02
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	stackVal := cpu.readImm(uint16((01 << 4) | (cpu.s + 1)))
 
 	if stackVal != 5 {
 		t.Errorf("Expected %v, Actual %v\n", 5, stackVal)
+	}
+
+	expectedCycles := infoArray[pha][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 
 }
