@@ -1605,13 +1605,18 @@ func TestPHP(t *testing.T) {
 	origStatus := cpu.readStatus()
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	loc := uint16((01 << 4) | (cpu.s + 1))
 	stackVal := cpu.readImm(loc)
 
 	if stackVal != origStatus {
 		t.Errorf("Expected %v, Actual %v\n", origStatus, stackVal)
+	}
+
+	expectedCycles := infoArray[php][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 
 }
@@ -1628,10 +1633,15 @@ func TestPLA(t *testing.T) {
 	cpu.push(val)
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.a != 0xBE {
 		t.Errorf("Expected %v, Actual %v\n", 0xBE, cpu.a)
+	}
+
+	expectedCycles := infoArray[pla][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 
 }
@@ -1646,11 +1656,16 @@ func TestPLP(t *testing.T) {
 	cpu.push(194)
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	status := cpu.readStatus()
 	if status != 194 {
 		t.Errorf("Expected %v, Actual %v\n", 190, status)
+	}
+
+	expectedCycles := infoArray[plp][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 
 }
