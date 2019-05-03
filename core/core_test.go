@@ -1733,10 +1733,15 @@ func TestROR(t *testing.T) {
 
 	cpu.pc = 20
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.a != 0x60 {
 		t.Errorf("Expected %v, Actual %v\n", 0x60, cpu.a)
+	}
+
+	expectedCycles := infoArray[rorAcc][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 
 	inst = cpu.Decode()
@@ -1751,6 +1756,19 @@ func TestROR(t *testing.T) {
 
 	if cpu.a != 0x58 {
 		t.Errorf("Expected %v, Actual %v\n", 0x58, cpu.a)
+	}
+
+	cpu.x = 2
+	cpu.mem[23] = rorAbsX
+	cpu.mem[24] = 0xFF
+	cpu.mem[25] = 0x01
+	cpu.mem[0x201] = 8
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.mem[0x201] != 4 {
+		t.Errorf("Expected %v, Actual %v\n", 4, cpu.mem[0x201])
 	}
 
 }
