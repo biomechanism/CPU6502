@@ -44,6 +44,7 @@ func (cpu *Cpu) GetPC() uint16 {
 }
 
 func (cpu *Cpu) SetCarry() {
+	fmt.Printf("Setting Carry/Borrow")
 	cpu.c = true
 }
 

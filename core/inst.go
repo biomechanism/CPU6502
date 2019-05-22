@@ -16,18 +16,29 @@ func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
 	return result
 }
 
+// func (cpu *Cpu) sub(val1, val2 byte) byte {
+// 	result := val1 - val2
+// 	return result
+// }
+
+//FIXME: Think logic is faulty.
+//A set borrow subtracts one from memory before memory is
+//subtracted from the accumulator, this seems incorrect
+//related to the apec A - M - C -> A
 func (cpu *Cpu) subWithBorrow(val1, val2 byte) byte {
 
-	result := val1 - val2
+	fmt.Printf("^cpu.b2i(%v) == %v\n", cpu.c, ^cpu.b2i(cpu.c))
 
-	cpu.setBorrowStatus(val1, val2)
+	result := val1 - val2 - cpu.b2i(!cpu.c)
+	//cpu.setBorrowStatus(val1, result)
 	cpu.setNegativeStatus(result)
 	cpu.setZeroStatus(result)
 
 	if result > val1 {
-		cpu.SetCarry()
-	} else {
 		cpu.ClearCarry()
+	} else {
+		cpu.SetCarry()
+
 	}
 
 	cpu.setOverflowStatus(val1, val2, result)
@@ -651,7 +662,9 @@ func (cpu *Cpu) SBC() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
 	v, c := cpu.readOpValue(cpu.pc)
-	cpu.a = cpu.subWithBorrow(cpu.a, cpu.subWithBorrow(v, cpu.getCarry()))
+	fmt.Printf(">>>SBC: (BEFORE) Acc = %v, Val  = %v\n", cpu.a, v)
+	cpu.a = cpu.subWithBorrow(cpu.a, v)
+	fmt.Printf(">>>SBC: (AFTER) Acc: = %v, Val = %v\n", cpu.a, v)
 	return false, cycles + c
 }
 

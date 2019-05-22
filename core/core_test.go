@@ -1349,7 +1349,7 @@ func TestJSR(t *testing.T) {
 
 	fmt.Printf("Stack Val: %v\n", cpu.mem[cpu.s+1])
 
-	//Ensure correct address has been pushed to the stack
+	//Enre correct address has been pushed to the stack
 	pcl := cpu.mem[cpu.s+1]
 	pch := cpu.mem[cpu.s+2]
 
@@ -1771,6 +1771,11 @@ func TestROR(t *testing.T) {
 		t.Errorf("Expected %v, Actual %v\n", 4, cpu.mem[0x201])
 	}
 
+	expectedCycles = infoArray[rorAbsX][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
+	}
+
 }
 
 func TestRTI(t *testing.T) {
@@ -1784,10 +1789,15 @@ func TestRTI(t *testing.T) {
 	cpu.pushStatusToStack()
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.pc != 0x1000 {
 		t.Errorf("Expected %v, Actual %v\n", 0x1000, cpu.pc)
+	}
+
+	expectedCycles := infoArray[rti][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 
 }
@@ -1802,10 +1812,15 @@ func TestRTS(t *testing.T) {
 	cpu.push(0x00)
 
 	inst := cpu.Decode()
-	inst()
+	cycles := inst()
 
 	if cpu.pc != 0x1001 {
 		t.Errorf("Expected %v, Actual %v\n", 0x1001, cpu.pc)
+	}
+
+	expectedCycles := infoArray[rts][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
 	}
 }
 
@@ -1813,6 +1828,7 @@ func TestSBC(t *testing.T) {
 	cpu := newCpu()
 	cpu.pc = 20
 	cpu.a = 10
+	cpu.c = true
 
 	cpu.mem[20] = sbcImm
 	cpu.mem[21] = 10
@@ -1831,11 +1847,15 @@ func TestSBC(t *testing.T) {
 		t.Errorf("Expected %v, Actual %v\n", true, cpu.z)
 	}
 
+	if cpu.c != true {
+		t.Errorf("Expected %v, Actual %v\n", true, cpu.c)
+	}
+
 	inst = cpu.Decode()
 	inst()
 
-	if cpu.c != true {
-		t.Errorf("Expected %v, Actual %v\n", true, cpu.c)
+	if cpu.c != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.c)
 	}
 
 	if cpu.n != true {
@@ -1846,6 +1866,25 @@ func TestSBC(t *testing.T) {
 		t.Errorf("Expected %v, Actual %v\n", false, cpu.z)
 	}
 
+	cpu.c = true
+	cpu.y = 5
+	cpu.a = 20
+	cpu.mem[24] = sbcAbsY
+	cpu.mem[25] = 0xFF
+	cpu.mem[26] = 0x01
+	cpu.mem[0x0204] = 5
+
+	inst = cpu.Decode()
+	cycles := inst()
+
+	if cpu.a != 15 {
+		t.Errorf("Expected %v, Actual %v\n", 15, cpu.a)
+	}
+
+	expectedCycles := infoArray[sbcAbsY][Cycles] + 1 //page boundary crossed
+	if cycles != expectedCycles {
+		t.Errorf("Expected %v, Actual %v\n", expectedCycles, cycles)
+	}
 }
 
 func TestCLC(t *testing.T) {
