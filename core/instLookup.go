@@ -16,15 +16,15 @@ const (
 	Imm
 	Zp
 	ZpX
-	ZpY //Not yet implemented
+	ZpY
 	Abs
 	AbsX
 	AbsY
-	Ind //Not yet implemented
+	Ind
 	IndX
 	IndY
-	Rel //Not yet implemented
-	Imp //Not yet implemented
+	Rel
+	Imp
 )
 
 var infoArray = [][5]int{

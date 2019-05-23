@@ -134,10 +134,6 @@ func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) int {
 	return 0
 }
 
-// func (cpu *Cpu) pageCrossed() {
-
-// }
-
 func (cpu *Cpu) ADC() (bool, int) {
 	fmt.Printf("IN ADC, pc = %v - OP: %v\n", cpu.pc, cpu.mem[cpu.pc])
 	opcode := cpu.mem[cpu.pc]
