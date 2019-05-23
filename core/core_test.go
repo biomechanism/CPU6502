@@ -59,6 +59,10 @@ func TestADCImmediateCarry(t *testing.T) {
 	inst := cpu.Decode()
 	inst()
 
+	if cpu.a != 0 {
+		t.Errorf("Expexted %v, Actual %v\n", 0, cpu.a)
+	}
+
 	if !cpu.isCarry() {
 		t.Errorf("Expexted %v, Actual %v\n", true, cpu.c)
 	}

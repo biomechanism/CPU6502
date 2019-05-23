@@ -3,7 +3,7 @@ package core
 import "fmt"
 
 func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
-	result := val1 + val2
+	result := val1 + val2 + cpu.b2i(cpu.c)
 
 	if result < val1 {
 		cpu.SetCarry()
@@ -145,8 +145,9 @@ func (cpu *Cpu) ADC() (bool, int) {
 	fmt.Println("READ ADC CYCLES")
 	v, c := cpu.readOpValue(cpu.pc)
 	fmt.Printf(">>OPVAL: %v\n", v)
-	cpu.a = cpu.addWithCarry(cpu.addWithCarry(v, cpu.getCarry()), cpu.a)
+	cpu.a = cpu.addWithCarry(cpu.a, v)
 	cpu.setNegativeStatus(cpu.a)
+	cpu.setZeroStatus(cpu.a)
 
 	return false, cycles + c
 }
