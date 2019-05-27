@@ -40,8 +40,6 @@ func TestADCImmediateOverflow(t *testing.T) {
 	inst := cpu.Decode()
 	inst()
 
-	fmt.Printf("FLAGS: %d\n", cpu.p)
-
 	if !cpu.isOverflow() {
 		t.Errorf("Expexted %d, Actual %d\n", 64, cpu.p&(1<<6))
 	}
@@ -226,7 +224,7 @@ func TestANDImmediate(t *testing.T) {
 	inst := cpu.Decode()
 	inst()
 
-	fmt.Printf("OVERFLOW: %d\n", cpu.p&1<<6)
+	//fmt.Printf("OVERFLOW: %d\n", cpu.p&1<<6)
 
 	if cpu.a != 2 {
 		t.Errorf("Expexted %d, Actual %d\n", 2, cpu.a)
@@ -802,7 +800,6 @@ func TestBPL(t *testing.T) {
 }
 
 func TestBRK(t *testing.T) {
-	fmt.Println("===== START OF BRK TEST =====")
 	cpu := newCpu()
 
 	//ISR Vector
@@ -841,13 +838,9 @@ func TestBRK(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 4096, cpu.pc)
 	}
 
-	fmt.Println("=== AFTER BRK ===")
-
 	//Execute adcImm 4
 	inst = cpu.Decode()
-	fmt.Println("=== DECODED ADC ===")
 	inst()
-	fmt.Println("=== EXECUTED ADC ===")
 
 	if cpu.a != 11 {
 		t.Errorf("Expected %d, Actual %d\n", 11, cpu.a)
@@ -1395,9 +1388,7 @@ func TestJSR(t *testing.T) {
 		t.Errorf("Expected %v, Actual %v\n", 0x1001, cpu.pc)
 	}
 
-	fmt.Printf("Stack Val: %v\n", cpu.mem[cpu.s+1])
-
-	//Enre correct address has been pushed to the stack
+	//Ensure correct address has been pushed to the stack
 	pcl := cpu.mem[cpu.s+1]
 	pch := cpu.mem[cpu.s+2]
 
