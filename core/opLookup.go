@@ -1,16 +1,14 @@
 package core
 
-import "fmt"
-
 func (cpu *Cpu) Decode() func() int {
-	fmt.Println("=== DECODING ===")
+	//	fmt.Println("=== DECODING ===")
 	opcode := cpu.mem[cpu.pc]
-	fmt.Println("=== GETTING OPCODE ===")
+	//	fmt.Println("=== GETTING OPCODE ===")
 	switch opcode {
 	case adcAbs, adcAbsX, adcAbsY, adcImm, adcIndX, adcIndY, adcZp, adcZpX:
-		fmt.Println("Returning Instruction")
+		//		fmt.Println("Returning Instruction")
 		return func() int {
-			fmt.Println("=== EXECUTING EXECUTOR ===")
+			//			fmt.Println("=== EXECUTING EXECUTOR ===")
 			return executor(cpu.ADC, cpu)
 		}
 	case andAbs, andAbsX, andAbsY, andImm, andIndX, andIndY, andZp, andZpX:
@@ -241,12 +239,12 @@ func (cpu *Cpu) Decode() func() int {
 }
 
 func executor(fn func() (bool, int), cpu *Cpu) int {
-	fmt.Println("Reading Opcode")
+	//	fmt.Println("Reading Opcode")
 	opCode := cpu.mem[cpu.pc]
-	fmt.Println("Finished Reading Opcode")
-	fmt.Println("Reading Opsize")
+	//	fmt.Println("Finished Reading Opcode")
+	//	fmt.Println("Reading Opsize")
 	opSize := infoArray[opCode][Size]
-	fmt.Println("Finished Reading Opsize")
+	//	fmt.Println("Finished Reading Opsize")
 	b, c := fn()
 	if b == false {
 		cpu.pc += uint16(opSize)

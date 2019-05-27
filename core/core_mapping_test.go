@@ -2,12 +2,11 @@ package core
 
 import (
 	"errors"
-	"fmt"
 	"testing"
 )
 
 func TestMapping(t *testing.T) {
-	fmt.Println("Testing Opcode mappings/sizes/cycles")
+	//	fmt.Println("Testing Opcode mappings/sizes/cycles")
 	if error := isValidMapping(opcodes); error != nil {
 		t.Error(error)
 	}
@@ -75,8 +74,8 @@ func isValidMapping(opcodes []int) (err error) {
 	for i := 0; i < len(opcodes); i++ {
 		opcode := opcodes[i]
 		if opcode != infoArray[i][ExpectedOpcode] {
-			fmt.Printf("INDEX: %d\n", i)
-			fmt.Printf("Expected Opcode: %d, Actual Opcode %d\n", opcode, infoArray[i][ExpectedOpcode])
+			//			fmt.Printf("INDEX: %d\n", i)
+			//			fmt.Printf("Expected Opcode: %d, Actual Opcode %d\n", opcode, infoArray[i][ExpectedOpcode])
 			return errors.New("The opcode and size/cycle lookup are out of sync")
 		}
 

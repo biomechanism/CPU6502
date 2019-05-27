@@ -1,7 +1,5 @@
 package core
 
-import "fmt"
-
 type Cpu struct {
 	a                   byte   //Accumulator
 	x, y                byte   //Index Registers
@@ -44,7 +42,7 @@ func (cpu *Cpu) GetPC() uint16 {
 }
 
 func (cpu *Cpu) SetCarry() {
-	fmt.Printf("Setting Carry/Borrow")
+	// fmt.Printf("Setting Carry/Borrow")
 	cpu.c = true
 }
 
@@ -104,18 +102,18 @@ func (cpu *Cpu) setOverflowStatus(val1, val2, result byte) {
 	v2 := int8(val2)
 	r := int8(result)
 
-	fmt.Printf("(Unsigned) V1: %d, V2: %d, R: %d\n", val1, val2, result)
-	fmt.Printf("(Signed) V1: %d, V2: %d, R: %d\n", v1, v2, r)
+	// fmt.Printf("(Unsigned) V1: %d, V2: %d, R: %d\n", val1, val2, result)
+	// fmt.Printf("(Signed) V1: %d, V2: %d, R: %d\n", v1, v2, r)
 
 	if v1 >= 0 && v2 >= 0 && r < 0 {
-		fmt.Println("1. Setting Overflow")
+		// fmt.Println("1. Setting Overflow")
 		cpu.v = true
 	} else if v1 < 0 && v2 < 0 && r > 0 {
-		fmt.Println("2. Setting Overflow")
+		// fmt.Println("2. Setting Overflow")
 		//TODO: Check if r should be >0 or >= 0
 		cpu.v = true
 	} else {
-		fmt.Println("Clearing Overflow")
+		// fmt.Println("Clearing Overflow")
 		cpu.v = false
 	}
 
@@ -126,7 +124,7 @@ func (cpu *Cpu) setCarryStatus(val1, val2, result byte) {
 	val3 := val1 + val2
 
 	if val3 < val1 || val3 < val2 {
-		fmt.Println("SETTING CARRY")
+		// fmt.Println("SETTING CARRY")
 		cpu.c = true
 	} else {
 		cpu.c = false
@@ -137,7 +135,7 @@ func (cpu *Cpu) setCarryStatus(val1, val2, result byte) {
 //Need to double check the logic for this
 func (cpu *Cpu) setBorrowStatus(val1, val2 byte) {
 	val3 := val1 - val2
-	fmt.Printf("CHECKING BORROW - v1: %v, v2: %v, v3: %v\n", val1, val2, val3)
+	// fmt.Printf("CHECKING BORROW - v1: %v, v2: %v, v3: %v\n", val1, val2, val3)
 	if val3 > val1 {
 		cpu.c = true
 	} else {
@@ -193,42 +191,42 @@ func (cpu *Cpu) addr(loc uint16) uint16 {
 }
 
 func (cpu *Cpu) readImm(loc uint16) byte {
-	fmt.Printf("[Immediate] LOC: %d\n", loc)
+	// fmt.Printf("[Immediate] LOC: %d\n", loc)
 	return cpu.mem[loc]
 }
 
 func (cpu *Cpu) readZp(loc uint16) byte {
-	fmt.Printf("[ZeroPage] LOC: %d\n", loc)
-	fmt.Printf("[ZeroPage] LOC Val: %d\n", cpu.mem[loc])
-	v := cpu.mem[cpu.mem[loc]]
-	fmt.Printf("[ZeroPage] Final Val: %d\n", v)
+	// fmt.Printf("[ZeroPage] LOC: %d\n", loc)
+	// fmt.Printf("[ZeroPage] LOC Val: %d\n", cpu.mem[loc])
+	//v := cpu.mem[cpu.mem[loc]]
+	// fmt.Printf("[ZeroPage] Final Val: %d\n", v)
 	return cpu.mem[cpu.mem[loc]]
 }
 
 func (cpu *Cpu) readZpX(loc uint16) byte {
-	fmt.Printf("[ZeroPageX] LOC: %d\n", loc)
-	fmt.Printf("[ZeroPageX] LOC Val: %d\n", cpu.mem[loc])
+	// fmt.Printf("[ZeroPageX] LOC: %d\n", loc)
+	// fmt.Printf("[ZeroPageX] LOC Val: %d\n", cpu.mem[loc])
 	v := cpu.addWithCarry(cpu.mem[loc], cpu.x)
-	fmt.Printf("[ZeroPageX] Final Val: %d\n", cpu.mem[v])
+	// fmt.Printf("[ZeroPageX] Final Val: %d\n", cpu.mem[v])
 	return cpu.mem[v]
 }
 
 func (cpu *Cpu) readAbs(loc uint16) byte {
-	fmt.Printf("[Absolute] LOC: %d\n", loc)
-	fmt.Printf("[Absolute] LOC Val: %d\n", cpu.mem[loc])
+	// fmt.Printf("[Absolute] LOC: %d\n", loc)
+	// fmt.Printf("[Absolute] LOC Val: %d\n", cpu.mem[loc])
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16
 	addr = uint16(v2)
 	addr = addr << 8
 	addr = addr | uint16(v1)
-	fmt.Printf("[Absolute] Final Val: %d\n", cpu.mem[addr])
+	// fmt.Printf("[Absolute] Final Val: %d\n", cpu.mem[addr])
 	return cpu.mem[addr]
 }
 
 func (cpu *Cpu) readAbsX(loc uint16) (byte, int) {
-	fmt.Printf("[AbsoluteX] LOC: %d\n", loc)
-	fmt.Printf("[AbsoluteX] LOC Val: %d\n", cpu.mem[loc])
+	// fmt.Printf("[AbsoluteX] LOC: %d\n", loc)
+	// fmt.Printf("[AbsoluteX] LOC Val: %d\n", cpu.mem[loc])
 	v1 := cpu.mem[loc]
 	v2 := cpu.mem[loc+1]
 	var addr uint16
@@ -236,9 +234,9 @@ func (cpu *Cpu) readAbsX(loc uint16) (byte, int) {
 	addr |= uint16(v1)
 	newAddr := addr + uint16(cpu.x)
 	cycle := boundaryCycles(addr, newAddr)
-	fmt.Printf(">>> ADDR: %v, NEWADDR: %v\n", addr, newAddr)
-	fmt.Printf(">>> BOUNDARY CYCLES: %v\n", cycle)
-	fmt.Printf(">>> RETURNING VAL: %v\n", cpu.mem[newAddr])
+	// fmt.Printf(">>> ADDR: %v, NEWADDR: %v\n", addr, newAddr)
+	// fmt.Printf(">>> BOUNDARY CYCLES: %v\n", cycle)
+	// fmt.Printf(">>> RETURNING VAL: %v\n", cpu.mem[newAddr])
 	return cpu.mem[newAddr], cycle
 }
 
@@ -387,7 +385,7 @@ func (cpu *Cpu) popStatusFromStack() {
 }
 
 func (cpu *Cpu) push(val byte) {
-	fmt.Printf("Pushing %v to stack (%v)\n", val, cpu.s)
+	//	fmt.Printf("Pushing %v to stack (%v)\n", val, cpu.s)
 	loc := uint16((01 << 4) | cpu.s)
 	cpu.writeImm(loc, val)
 	cpu.s--
@@ -395,7 +393,7 @@ func (cpu *Cpu) push(val byte) {
 
 func (cpu *Cpu) pop() byte {
 	cpu.s++
-	fmt.Printf("Popping %v from stack (%v)\n", cpu.readImm(uint16(01<<4|cpu.s)), cpu.s)
+	//	fmt.Printf("Popping %v from stack (%v)\n", cpu.readImm(uint16(01<<4|cpu.s)), cpu.s)
 	loc := uint16((01 << 4) | cpu.s)
 	return cpu.readImm(loc)
 }

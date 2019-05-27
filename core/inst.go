@@ -16,21 +16,9 @@ func (cpu *Cpu) addWithCarry(val1, val2 byte) byte {
 	return result
 }
 
-// func (cpu *Cpu) sub(val1, val2 byte) byte {
-// 	result := val1 - val2
-// 	return result
-// }
-
-//FIXME: Think logic is faulty.
-//A set borrow subtracts one from memory before memory is
-//subtracted from the accumulator, this seems incorrect
-//related to the apec A - M - C -> A
 func (cpu *Cpu) subWithBorrow(val1, val2 byte) byte {
 
-	fmt.Printf("^cpu.b2i(%v) == %v\n", cpu.c, ^cpu.b2i(cpu.c))
-
 	result := val1 - val2 - cpu.b2i(!cpu.c)
-	//cpu.setBorrowStatus(val1, result)
 	cpu.setNegativeStatus(result)
 	cpu.setZeroStatus(result)
 
@@ -62,39 +50,39 @@ func (cpu *Cpu) readOpAddr(loc uint16) uint16 {
 func (cpu *Cpu) readOpValue(loc uint16) (byte, int) {
 	opcode := cpu.mem[loc]
 	mode := infoArray[opcode][AddressMode]
-	fmt.Printf("OP: %x, AM: %d, LOC: %v\n", opcode, mode, loc)
+	//	fmt.Printf("OP: %x, AM: %d, LOC: %v\n", opcode, mode, loc)
 	var v byte
 	var c int
 	switch mode {
 	case Acc:
 		v = cpu.a
 	case Imm:
-		fmt.Println("MODE: IMM")
+		//		fmt.Println("MODE: IMM")
 		v = cpu.readImm(cpu.pc + 1)
 	case Zp:
-		fmt.Println("MODE: ZP (Read)")
+		//		fmt.Println("MODE: ZP (Read)")
 		v = cpu.readZp(cpu.pc + 1)
 	case ZpX:
-		fmt.Println("MODE: ZPX")
+		//		fmt.Println("MODE: ZPX")
 		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
 		//to the base or not.
 		v = cpu.readZpX(cpu.pc + 1)
 	case Abs:
-		fmt.Println("MODE: ABS")
+		//		fmt.Println("MODE: ABS")
 		v = cpu.readAbs(cpu.pc + 1)
 	case AbsX:
-		fmt.Println("MODE: ABSX")
+		//		fmt.Println("MODE: ABSX")
 		//TODO: CHECK, should add read calculations from and index have a carry
 		//check?
 		v, c = cpu.readAbsX(cpu.pc + 1)
 	case AbsY:
-		fmt.Println("MODE: ABSY")
+		//		fmt.Println("MODE: ABSY")
 		v, c = cpu.readAbsY(cpu.pc + 1)
 	case IndX:
-		fmt.Println("MODE: INDX")
+		//		fmt.Println("MODE: INDX")
 		v = cpu.readIndX(cpu.pc + 1)
 	case IndY:
-		fmt.Println("MODE: INDY")
+		//		fmt.Println("MODE: INDY")
 		v, c = cpu.readIndY(cpu.pc + 1)
 	default:
 		fmt.Println("INVALID ADDRESSING MODE! (Read)")
@@ -109,15 +97,15 @@ func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) int {
 	case Acc:
 		cpu.a = value
 	case Zp:
-		fmt.Println("MODE: ZP (Write)")
+		//		fmt.Println("MODE: ZP (Write)")
 		cpu.writeZp(cpu.pc+1, value)
 	case ZpX:
-		fmt.Println("MODE: ZPX (Write)")
+		//		fmt.Println("MODE: ZPX (Write)")
 		//TODO: CHECK, Not sure whether the carry needs to be handled when adding the X index
 		//to the base or not.
 		cpu.writeZpX(cpu.pc+1, value)
 	case Abs:
-		fmt.Println("MODE: ABS")
+		//		fmt.Println("MODE: ABS")
 		cpu.writeAbs(cpu.pc+1, value)
 	case AbsX:
 		return cpu.writeAbsX(cpu.pc+1, value)
@@ -135,12 +123,12 @@ func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) int {
 }
 
 func (cpu *Cpu) ADC() (bool, int) {
-	fmt.Printf("IN ADC, pc = %v - OP: %v\n", cpu.pc, cpu.mem[cpu.pc])
+	//	fmt.Printf("IN ADC, pc = %v - OP: %v\n", cpu.pc, cpu.mem[cpu.pc])
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
-	fmt.Println("READ ADC CYCLES")
+	//	fmt.Println("READ ADC CYCLES")
 	v, c := cpu.readOpValue(cpu.pc)
-	fmt.Printf(">>OPVAL: %v\n", v)
+	//	fmt.Printf(">>OPVAL: %v\n", v)
 	cpu.a = cpu.addWithCarry(cpu.a, v)
 	cpu.setNegativeStatus(cpu.a)
 	cpu.setZeroStatus(cpu.a)
@@ -161,7 +149,7 @@ func (cpu *Cpu) AND() (bool, int) {
 func (cpu *Cpu) ASL() (bool, int) {
 
 	v, c := cpu.readOpValue(cpu.pc)
-	fmt.Printf("ASL Value before Op: %d\n", v)
+	//	fmt.Printf("ASL Value before Op: %d\n", v)
 
 	var isCarry bool
 
@@ -177,11 +165,11 @@ func (cpu *Cpu) ASL() (bool, int) {
 	cpu.writeOpValue(cpu.pc, v)
 
 	if isCarry {
-		fmt.Println("ASL: Setting Carry Flag")
+		//		fmt.Println("ASL: Setting Carry Flag")
 		cpu.SetCarry()
 
 	} else {
-		fmt.Println("ASL: Clearing Carry Flag")
+		//		fmt.Println("ASL: Clearing Carry Flag")
 		cpu.ClearCarry()
 	}
 
@@ -200,13 +188,13 @@ func (cpu *Cpu) BCC() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if !cpu.isCarry() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BCC Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BCC Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BCC Fall Through\n")
+	//	fmt.Print("BCC Fall Through\n")
 	return false, cycles
 }
 
@@ -216,13 +204,13 @@ func (cpu *Cpu) BCS() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if cpu.isCarry() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BCS Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BCS Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		cpu.pc = newAddr
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		return true, cycles + c + 1
 	}
-	fmt.Print("BCS Fall Through\n")
+	//	fmt.Print("BCS Fall Through\n")
 	return false, cycles
 }
 
@@ -231,20 +219,26 @@ func (cpu *Cpu) BEQ() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if cpu.isZero() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BEQ Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BEQ Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BEQ Fall Through\n")
+	//	fmt.Print("BEQ Fall Through\n")
 	return false, cycles
 
 }
 
-//TODO
 func (cpu *Cpu) BIT() (bool, int) {
-	return false, 0
+	opcode := cpu.mem[cpu.pc]
+	cycles := infoArray[opcode][Cycles]
+	val, _ := cpu.readOpValue(cpu.pc)
+	cpu.z = !cpu.i2b(cpu.a & val)
+	cpu.n = cpu.i2b((val & (1 << 7)))
+	cpu.v = cpu.i2b((val & (1 << 6)))
+
+	return false, cycles
 }
 
 func (cpu *Cpu) BMI() (bool, int) {
@@ -252,13 +246,13 @@ func (cpu *Cpu) BMI() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if cpu.isNegative() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BMI Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BMI Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BMI Fall Through\n")
+	//	fmt.Print("BMI Fall Through\n")
 	return false, cycles
 }
 
@@ -267,13 +261,13 @@ func (cpu *Cpu) BNE() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if !cpu.isZero() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BNE Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BNE Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BNE Fall Through\n")
+	//	fmt.Print("BNE Fall Through\n")
 	return false, cycles
 }
 
@@ -282,13 +276,13 @@ func (cpu *Cpu) BPL() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if !cpu.isNegative() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BPL Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BPL Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BPL Fall Through\n")
+	//	fmt.Print("BPL Fall Through\n")
 	return false, cycles
 }
 
@@ -329,13 +323,13 @@ func (cpu *Cpu) BVC() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if !cpu.isOverflow() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BVC Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BVC Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BPL Fall Through\n")
+	//	fmt.Print("BPL Fall Through\n")
 	return false, cycles
 }
 
@@ -344,13 +338,13 @@ func (cpu *Cpu) BVS() (bool, int) {
 	cycles := infoArray[opcode][Cycles]
 	if cpu.isOverflow() {
 		relAddr := int8(cpu.mem[cpu.pc+1])
-		fmt.Printf("BVS Branching; Rel val: %d\n", relAddr)
+		//		fmt.Printf("BVS Branching; Rel val: %d\n", relAddr)
 		newAddr := cpu.pc + uint16(relAddr)
 		c := boundaryCycles(uint16(relAddr), newAddr)
 		cpu.pc = newAddr
 		return true, cycles + c + 1
 	}
-	fmt.Print("BPS Fall Through\n")
+	//	fmt.Print("BPS Fall Through\n")
 	return false, cycles
 }
 
@@ -457,7 +451,7 @@ func (cpu *Cpu) EOR() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
 	val, c := cpu.readOpValue(cpu.pc)
-	fmt.Printf("EOR VAL: %v\n", val)
+	//	fmt.Printf("EOR VAL: %v\n", val)
 	cpu.a ^= val
 	cpu.setNegativeStatus(cpu.a)
 	cpu.setZeroStatus(cpu.a)
@@ -555,7 +549,7 @@ func (cpu *Cpu) LSR() (bool, int) {
 }
 
 func (cpu *Cpu) NOP() (bool, int) {
-	fmt.Printf("IN NOP, pc = %v\n", cpu.pc)
+	//	fmt.Printf("IN NOP, pc = %v\n", cpu.pc)
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
 	return false, cycles
@@ -638,7 +632,7 @@ func (cpu *Cpu) RTI() (bool, int) {
 	pcl := cpu.pop()
 	pch := cpu.pop()
 
-	fmt.Printf("RTI: PCL %v, PCH %v\n", pcl, pch)
+	//	fmt.Printf("RTI: PCL %v, PCH %v\n", pcl, pch)
 
 	cpu.pc = (uint16(pch) << 8) | uint16(pcl)
 
@@ -659,9 +653,9 @@ func (cpu *Cpu) SBC() (bool, int) {
 	opcode := cpu.mem[cpu.pc]
 	cycles := infoArray[opcode][Cycles]
 	v, c := cpu.readOpValue(cpu.pc)
-	fmt.Printf(">>>SBC: (BEFORE) Acc = %v, Val  = %v\n", cpu.a, v)
+	//	fmt.Printf(">>>SBC: (BEFORE) Acc = %v, Val  = %v\n", cpu.a, v)
 	cpu.a = cpu.subWithBorrow(cpu.a, v)
-	fmt.Printf(">>>SBC: (AFTER) Acc: = %v, Val = %v\n", cpu.a, v)
+	//	fmt.Printf(">>>SBC: (AFTER) Acc: = %v, Val = %v\n", cpu.a, v)
 	return false, cycles + c
 }
 

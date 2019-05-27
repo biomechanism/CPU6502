@@ -658,6 +658,50 @@ func TestBEQ(t *testing.T) {
 
 }
 
+func TestBIT(t *testing.T) {
+	cpu := newCpu()
+	cpu.pc = 10
+	cpu.a = 3
+	cpu.mem[20] = 2
+	cpu.mem[10] = bitZp
+	cpu.mem[11] = 20
+
+	inst := cpu.Decode()
+	cycles := inst()
+
+	if cpu.z != false {
+		t.Errorf("Expected %v, Actual %v\n", false, cpu.z)
+	}
+
+	m7 := cpu.i2b((cpu.mem[20] & (1 << 7)))
+	if cpu.n != m7 {
+		t.Errorf("Expected %v, Actual %v\n", m7, cpu.n)
+	}
+
+	m6 := cpu.i2b((cpu.mem[20] & (1 << 6)))
+	if cpu.n != m6 {
+		t.Errorf("Expected %v, Actual %v\n", m6, cpu.v)
+	}
+
+	expectedCycles := infoArray[bitZp][Cycles]
+	if cycles != expectedCycles {
+		t.Errorf("Expected %d, Actual %d\n", expectedCycles, cycles)
+	}
+
+	cpu.mem[0x0104] = 4
+	cpu.mem[12] = bitAbs
+	cpu.mem[13] = 0x04
+	cpu.mem[14] = 0x01
+
+	inst = cpu.Decode()
+	cycles = inst()
+
+	if cpu.z != true {
+		t.Errorf("Expected %v, Actual %v\n", true, cpu.z)
+	}
+
+}
+
 func TestBMI(t *testing.T) {
 	cpu := newCpu()
 	cpu.pc = 19
