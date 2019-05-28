@@ -224,8 +224,6 @@ func TestANDImmediate(t *testing.T) {
 	inst := cpu.Decode()
 	inst()
 
-	//fmt.Printf("OVERFLOW: %d\n", cpu.p&1<<6)
-
 	if cpu.a != 2 {
 		t.Errorf("Expexted %d, Actual %d\n", 2, cpu.a)
 	}
@@ -234,29 +232,6 @@ func TestANDImmediate(t *testing.T) {
 		t.Errorf("Expected %d, Actual %d\n", 2, cpu.pc)
 	}
 }
-
-// AND does not affect overflow
-// func TestANDOverflowCleared(t *testing.T) {
-// 	cpu := newCpu()
-
-// 	cpu.a = 10
-// 	cpu.mem[0] = andImm
-// 	cpu.mem[1] = 6
-
-// 	cpu.p |= (1 << 6)
-
-// 	inst := cpu.Decode()
-// 	inst()
-
-// 	overflow := cpu.p & (1 << 6)
-
-// 	fmt.Printf("OVERFLOW: %d\n", overflow)
-
-// 	if overflow != 0 {
-// 		t.Errorf("Expexted %d, Actual %d\n", 0, overflow)
-// 	}
-
-// }
 
 func TestANDZeroPage(t *testing.T) {
 	cpu := newCpu()
