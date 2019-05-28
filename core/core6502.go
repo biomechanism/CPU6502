@@ -61,21 +61,6 @@ func (cpu *Cpu) ClearIRQDisable() {
 	cpu.i = false
 }
 
-// func (cpu *Cpu) SetNZStatus(value byte) {
-// 	// if int8(value) < 0 {
-// 	// 	cpu.p |= 1 << 7
-// 	// } else {
-// 	// 	cpu.p &= ^byte(1 << 6)
-// 	// }
-
-// }
-
-// func (cpu *Cpu) Execute() {
-// 	//op := cpu.mem[cpu.pc]
-// 	//Call op function
-
-// }
-
 func (cpu *Cpu) setNegativeStatus(value byte) {
 	if int8(value) < 0 {
 		cpu.n = true
@@ -290,17 +275,6 @@ func (cpu *Cpu) writeAbsY(loc uint16, value byte) int {
 	cycle := boundaryCycles(addr, newAddr)
 	return cycle
 }
-
-// func (cpu *Cpu) writeIndX(loc uint16, value byte) int {
-// 	zpIndex := cpu.mem[loc]
-// 	zpIndex += cpu.x
-// 	lowByte := cpu.mem[zpIndex]
-// 	hiByte := cpu.mem[zpIndex+1]
-// 	var addr = (uint16(hiByte) << 8) | uint16(lowByte)
-// 	cpu.mem[addr] = value
-// 	cycle := boundaryCycles(addr, newAddr)
-// 	return cycle
-// }
 
 func (cpu *Cpu) pushStatusToStack() {
 	//N 	V 	- 	B 	D 	I 	Z 	C

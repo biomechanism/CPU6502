@@ -94,6 +94,7 @@ func (cpu *Cpu) writeOpValue(opcodeLoc uint16, value byte) int {
 	case AbsY:
 		return cpu.writeAbsY(cpu.pc+1, value)
 	case IndX:
+		fallthrough
 	default:
 		fmt.Println("INVALID ADDRESSING MODE! (Write)")
 	}
