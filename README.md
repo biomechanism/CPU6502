@@ -2,7 +2,7 @@
 
 ### Status
 
-The current emulator supports all official instructions. Support for the illegal opcodes has not yet been implemented, but are planned. 
+The current emulator supports all official instructions. Support for the illegal opcodes has not yet been implemented, but is planned. 
 As it is on its own it is not hughly useful, but the intention is for it to be part of a larger project. 
 For the curious it may be useful to look into CPU emulation, to that extent I hope the code is mostly straightforward enough to understand. 
 The intention however is not to produce an efficient emulator, rather something resonable to understand and functional. 
